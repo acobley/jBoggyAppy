@@ -33,7 +33,7 @@ public class AuthorConnector {
 	
 	}
 	
-	public HashMap getAuthors()
+	public List<AuthorStore> getAuthors()
 	{
 		List<AuthorStore> Authors= new LinkedList<AuthorStore>();
 		AuthorStore Au=new AuthorStore();
@@ -86,12 +86,13 @@ public class AuthorConnector {
                 List<Column> columns = map.get(key);
                 //print key
                 Au.setname(key); //The key will be the name.
-                hm.put("Name", key);
+                
                 //System.out.println(key);
                 for (Column column : columns) {
                     //print columns with values
                 	 if (hm.containsKey(column.getName())){
-         		    	hm.put(column.getName(), column.getValue());
+                		 //At this point we need to add to the list 
+         		    	//hm.put(column.getName(), column.getValue());
          				
          			}
                 	 

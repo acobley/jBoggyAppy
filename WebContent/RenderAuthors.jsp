@@ -10,22 +10,14 @@
 </head>
 <body>
 <%
-HashMap hm = (HashMap)request.getAttribute("Authors");
+List<AuthorStore> Authors = (HashMap)request.getAttribute("Authors");
 if (hm==null){
  %>
 	<h1>Error no Hashmap</h1>
 	<% 
 }else{
 %>
-<h2><%=hm.get("Name") %></h2>
-<p>Email:<%=hm.get("Email") %> </p>
-<%
 
-String Address=(String)hm.get("Address");
-if (Address !=null){
-	%>
-	<h3>Address</h3>
-	<p><%=Address %></p>
 	<% 
 }
 }

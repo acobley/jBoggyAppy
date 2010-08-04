@@ -2,6 +2,7 @@ package uk.ac.dundee.computing.aec.jBloggyAppy;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import javax.servlet.RequestDispatcher;
 
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.*;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
 /**
  * Servlet implementation class Author
  */
@@ -34,7 +36,7 @@ public class Author extends HttpServlet {
 		//Lets just get all Authors for now
 		AuthorConnector au = new AuthorConnector();
 		au.setHost("134.36.36.151");
-		HashMap hm = au.getAuthors();
+		List<AuthorStore> hm = au.getAuthors();
 		request.setAttribute("Authors", hm);
 		RequestDispatcher rd=request.getRequestDispatcher("RenderAuthors.jsp");
 		rd.forward(request,response);
