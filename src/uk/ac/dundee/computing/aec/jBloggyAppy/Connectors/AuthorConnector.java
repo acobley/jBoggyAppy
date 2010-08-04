@@ -23,9 +23,13 @@ public class AuthorConnector {
 	String Host=null;
 	private HashMap hm = new HashMap(); //We'll use this to make sure we only get fields we expect from the DB
 	public AuthorConnector(){
+		//We use a hashmap to define the fields we are expecting
 		hm.put("Email","");
 		hm.put("Twitter","");
 		hm.put("Address", "");
+		hm.put("Bio", "");
+		//We don't worry about the Name, this will be the key
+		
 	
 	}
 	
@@ -34,6 +38,7 @@ public class AuthorConnector {
 		List<AuthorStore> Authors= new LinkedList<AuthorStore>();
 		AuthorStore Au=new AuthorStore();
 		CassandraClient client=null;
+		
 		try{
 			Connect();
 		}catch (Exception et){
@@ -73,9 +78,13 @@ public class AuthorConnector {
             for (String key : map.keySet()) {
                 List<Column> columns = map.get(key);
                 //print key
-                System.out.println(key);
+                Au.setname(key); //The key will be the name.
+                //System.out.println(key);
                 for (Column column : columns) {
-                    //print columns with values
+                    
+                	String colName=string(column.getName());
+         				
+         			
                     System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
                 }
             }
@@ -95,13 +104,15 @@ public class AuthorConnector {
 	  this.Host=Host;	
 	}
 	
+	//This Connects to a named host.  A servlet can use this to load balance
 	private CassandraClient Connect(String Host) throws IllegalStateException, PoolExhaustedException, Exception{
 		CassandraClientPool pool = CassandraClientPoolFactory.INSTANCE.get();
         CassandraClient client = pool.borrowClient(Host, 9160);
         return client;
 	}
 	
-
+	//This just connects to the stored host.  This can be used so that
+	//an instance of Authorconnector always goes to the same host
 	private CassandraClient Connect() throws IllegalStateException, PoolExhaustedException, Exception{
 		CassandraClientPool pool = CassandraClientPoolFactory.INSTANCE.get();
         CassandraClient client = pool.borrowClient(this.Host, 9160);
