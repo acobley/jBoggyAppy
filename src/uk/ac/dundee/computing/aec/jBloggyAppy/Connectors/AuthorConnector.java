@@ -47,7 +47,7 @@ public class AuthorConnector {
 		hm.put("Name", "");
 		
 		try{
-			Connect();
+			client=Connect();
 		}catch (Exception et){
 			System.out.println("Can't Connect"+et);
 			return null;

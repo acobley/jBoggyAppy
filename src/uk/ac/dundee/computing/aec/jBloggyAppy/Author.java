@@ -36,7 +36,7 @@ public class Author extends HttpServlet {
 		au.setHost("134.36.36.151");
 		HashMap hm = au.getAuthors();
 		request.setAttribute("Authors", hm);
-		RequestDispatcher rd=request.getRequestDispatcher("/RenderAuthors.jsp");
+		RequestDispatcher rd=request.getRequestDispatcher("RenderAuthors.jsp");
 		rd.forward(request,response);
 		
 		
