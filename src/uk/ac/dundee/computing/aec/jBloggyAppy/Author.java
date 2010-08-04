@@ -36,8 +36,8 @@ public class Author extends HttpServlet {
 		//Lets just get all Authors for now
 		AuthorConnector au = new AuthorConnector();
 		au.setHost("134.36.36.151");
-		List<AuthorStore> hm = au.getAuthors();
-		request.setAttribute("Authors", hm);
+		List<AuthorStore> Authors = au.getAuthors();
+		request.setAttribute("Authors", Authors);
 		RequestDispatcher rd=request.getRequestDispatcher("RenderAuthors.jsp");
 		rd.forward(request,response);
 		

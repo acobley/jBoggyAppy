@@ -85,19 +85,26 @@ public class AuthorConnector {
             for (String key : map.keySet()) {
                 List<Column> columns = map.get(key);
                 //print key
+                Au=new AuthorStore();
                 Au.setname(key); //The key will be the name.
                 
-                //System.out.println(key);
+                System.out.println(key);
                 for (Column column : columns) {
                     //print columns with values
-                	 if (hm.containsKey(column.getName())){
-                		 //At this point we need to add to the list 
-         		    	//hm.put(column.getName(), column.getValue());
-         				
-         			}
+                	 //if (hm.containsKey(column.getName())){
+                		
+                		 String Name=string(column.getName());
+                		 String Value=string(column.getValue());
                 	 
-                    System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
+                		 if (Name.compareTo("Email")==0)
+                			 Au.setemailName(Value);
+                	
+         				
+         				//}
+                	 
+                	 	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
                 }
+                Authors.add(Au);
             }
 
             // This line makes sure that even if the client had failures and recovered, a correct
@@ -108,7 +115,7 @@ public class AuthorConnector {
 			System.out.println("Can't get Authors "+et);
 			return null;
 		}
-		return hm;
+		return Authors;
 	}
 	
 	public void setHost(String Host){

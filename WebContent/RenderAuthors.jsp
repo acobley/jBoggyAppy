@@ -10,16 +10,29 @@
 </head>
 <body>
 <%
-List<AuthorStore> Authors = (HashMap)request.getAttribute("Authors");
-if (hm==null){
+List<AuthorStore> Authors = (List<AuthorStore>)request.getAttribute("Authors");
+if (Authors==null){
  %>
 	<h1>Error no Hashmap</h1>
 	<% 
 }else{
 %>
+<p>Should put the output here</p>
+<% 
+Iterator<AuthorStore> iterator;
 
+
+iterator = Authors.iterator();     
+while (iterator.hasNext()){
+	AuthorStore md = (AuthorStore)iterator.next();
+	
+	%>
+	<%=md.getname() %> &nbsp; <%=md.getemailName() %>  <br/>
 	<% 
+ 
 }
+%>
+<% 
 }
 %>
 </body>
