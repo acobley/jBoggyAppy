@@ -33,11 +33,18 @@ public class AuthorConnector {
 	
 	}
 	
-	public List<AuthorStore> getAuthors()
+	public HashMap getAuthors()
 	{
 		List<AuthorStore> Authors= new LinkedList<AuthorStore>();
 		AuthorStore Au=new AuthorStore();
 		CassandraClient client=null;
+		
+		HashMap hm = new HashMap(); //We'll use this to make sure we only get fields we expect from the DB
+		hm.put("Email","");
+		hm.put("Twitter","");
+		hm.put("Address", "");
+		hm.put("Bio", "");
+		hm.put("Name", "");
 		
 		try{
 			Connect();
@@ -79,12 +86,15 @@ public class AuthorConnector {
                 List<Column> columns = map.get(key);
                 //print key
                 Au.setname(key); //The key will be the name.
+                hm.put("Name", key);
                 //System.out.println(key);
                 for (Column column : columns) {
-                    
-                	String colName=string(column.getName());
+                    //print columns with values
+                	 if (hm.containsKey(column.getName())){
+         		    	hm.put(column.getName(), column.getValue());
          				
-         			
+         			}
+                	 
                     System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
                 }
             }
@@ -97,7 +107,7 @@ public class AuthorConnector {
 			System.out.println("Can't get Authors "+et);
 			return null;
 		}
-		return Authors;
+		return hm;
 	}
 	
 	public void setHost(String Host){
