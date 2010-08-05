@@ -123,6 +123,20 @@ public class Author extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		AuthorStore Author =new AuthorStore();
+		Author.setname(request.getParameter("Name"));
+		Author.setemailName(request.getParameter("Email"));
+		Author.setaddress(request.getParameter("Address"));
+		Author.settwitterName(request.getParameter("Twitter"));
+		AuthorConnector au = new AuthorConnector();
+		au.setHost("134.36.36.151");
+		RequestDispatcher rd;
+		if (au.AddAuthor(Author)== true){
+			rd=request.getRequestDispatcher("RenderAuthors.jsp");
+		}else{
+			rd=request.getRequestDispatcher("RegisterUser.jsp");
+		}
+		rd.forward(request,response);
 	}
 
 	/**

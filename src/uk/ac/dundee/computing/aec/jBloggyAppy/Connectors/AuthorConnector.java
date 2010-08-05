@@ -22,6 +22,7 @@ public class AuthorConnector {
 	
 	String Host=null;
 	private HashMap hm = new HashMap(); //We'll use this to make sure we only get fields we expect from the DB
+	CassandraClientPool pool;
 	public AuthorConnector(){
 		//We use a hashmap to define the fields we are expecting
 		hm.put("Email","");
@@ -30,10 +31,11 @@ public class AuthorConnector {
 		hm.put("Bio", "");
 		//We don't worry about the Name, this will be the key
 		
+		pool = CassandraClientPoolFactory.INSTANCE.get();
 	
 	}
 	
-	public List<AuthorStore> getAuthors()
+	public List<AuthorStore> getAuthors() 
 	{
 		List<AuthorStore> Authors= new LinkedList<AuthorStore>();
 		AuthorStore Au=new AuthorStore();
@@ -113,12 +115,19 @@ public class AuthorConnector {
 		}catch (Exception et){
 			System.out.println("Can't get Authors "+et);
 			return null;
+		}finally{
+			try{
+				pool.releaseClient(client);
+			}catch(Exception et){
+				System.out.println("Pool acn't be released");
+				return null;
+			}
 		}
 		return Authors;
 	}
 	
 	
-	public AuthorStore getAuthor(String Author)
+	public AuthorStore getAuthor(String Author) 
 	{
 		System.out.println("Author conector getAuthor "+Author);
 		AuthorStore Au=new AuthorStore();
@@ -196,8 +205,84 @@ public class AuthorConnector {
 		}catch (Exception et){
 			System.out.println("Can't get Authors "+et);
 			return null;
+		}finally{
+			try{
+				pool.releaseClient(client);
+			}catch(Exception et){
+				System.out.println("Pool acn't be released");
+				return null;
+			}
 		}
 		return Au;
+	}
+	
+	
+	//This will add an Author  The only thing in the AuthorStore needed is the Name/key
+	public boolean AddAuthor(AuthorStore Author){
+		
+		if (Author.getname() == null){
+			//If we don't have a name we can't add this user
+			return false;
+		}
+		if (Author.getemailName()==null){
+			//Same with Email, all other fields are optional
+			return false;
+		}
+		System.out.println("Author conector addAuthor "+Author);
+		
+		CassandraClient client=null;
+		try{
+			client=Connect();
+		}catch (Exception et){
+			System.out.println("Can't Connect"+et);
+			return false;
+		}
+		
+		try{
+			 Keyspace ks = client.getKeyspace("BloggyAppy");
+			 ColumnPath columnPath = new ColumnPath("Authors");
+			 String key = Author.getname();
+             String columnName = "Email";
+             String value = Author.getemailName();
+             columnPath.setColumn(columnName.getBytes());
+             ks.insert(key, columnPath, value.getBytes());
+             if (Author.gettel()!=null){
+            	 columnName = "Tel";
+            	 value = Author.gettel(); 
+            	 columnPath.setColumn(columnName.getBytes());
+            	 ks.insert(key, columnPath, value.getBytes());
+             }
+             if (Author.getaddress()!=null){
+            	 columnName = "Address";
+            	 value = Author.getaddress(); 
+            	 columnPath.setColumn(columnName.getBytes());
+            	 ks.insert(key, columnPath, value.getBytes());
+             }
+             if (Author.gettwitterName()!=null){
+            	 columnName = "Twitter";
+            	 value = Author.gettwitterName(); 
+            	 columnPath.setColumn(columnName.getBytes());
+            	 ks.insert(key, columnPath, value.getBytes());
+             }
+             if (Author.getbio()!=null){
+            	 columnName = "Bio";
+            	 value = Author.getbio(); 
+            	 columnPath.setColumn(columnName.getBytes());
+            	 ks.insert(key, columnPath, value.getBytes());
+             }
+             
+		}catch (Exception et){
+			System.out.println("Can't Create a new Author "+et);
+			return false;
+		}finally{
+			try{
+				pool.releaseClient(client);
+			}catch(Exception et){
+				System.out.println("Pool acn't be released");
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	
@@ -207,7 +292,7 @@ public class AuthorConnector {
 	
 	//This Connects to a named host.  A servlet can use this to load balance
 	private CassandraClient Connect(String Host) throws IllegalStateException, PoolExhaustedException, Exception{
-		CassandraClientPool pool = CassandraClientPoolFactory.INSTANCE.get();
+		
         CassandraClient client = pool.borrowClient(Host, 9160);
         return client;
 	}
@@ -215,10 +300,12 @@ public class AuthorConnector {
 	//This just connects to the stored host.  This can be used so that
 	//an instance of Authorconnector always goes to the same host
 	private CassandraClient Connect() throws IllegalStateException, PoolExhaustedException, Exception{
-		CassandraClientPool pool = CassandraClientPoolFactory.INSTANCE.get();
+		
         CassandraClient client = pool.borrowClient(this.Host, 9160);
         return client;
 	}
+	
+	
 	
 
 }
