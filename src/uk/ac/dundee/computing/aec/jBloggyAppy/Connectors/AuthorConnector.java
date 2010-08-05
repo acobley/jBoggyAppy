@@ -38,14 +38,6 @@ public class AuthorConnector {
 		List<AuthorStore> Authors= new LinkedList<AuthorStore>();
 		AuthorStore Au=new AuthorStore();
 		CassandraClient client=null;
-		
-		HashMap hm = new HashMap(); //We'll use this to make sure we only get fields we expect from the DB
-		hm.put("Email","");
-		hm.put("Twitter","");
-		hm.put("Address", "");
-		hm.put("Bio", "");
-		hm.put("Name", "");
-		
 		try{
 			client=Connect();
 		}catch (Exception et){
@@ -67,7 +59,7 @@ public class AuthorConnector {
              */
             SliceRange columnRange = new SliceRange();
             columnRange.setCount(100);
-            String start="Email";
+            String start="";
             byte bStart[]=start.getBytes();
             columnRange.setStart(bStart);
             columnRange.setFinish(new byte[0]);
@@ -95,10 +87,17 @@ public class AuthorConnector {
                 		
                 		 String Name=string(column.getName());
                 		 String Value=string(column.getValue());
-                	 
+ 
+                		 if (Name.compareTo("Twitter")==0)
+                			 Au.settwitterName(Value);
                 		 if (Name.compareTo("Email")==0)
                 			 Au.setemailName(Value);
-                	
+                		 if (Name.compareTo("Bio")==0)
+                			 Au.setbio(Value);
+                		 if (Name.compareTo("Address")==0)
+                			 Au.setaddress(Value);
+                		 if (Name.compareTo("Tel")==0)
+                			 Au.settel(Value);
          				
          				//}
                 	 
@@ -117,6 +116,90 @@ public class AuthorConnector {
 		}
 		return Authors;
 	}
+	
+	
+	public AuthorStore getAuthor(String Author)
+	{
+		System.out.println("Author conector getAuthor "+Author);
+		AuthorStore Au=new AuthorStore();
+		CassandraClient client=null;
+		try{
+			client=Connect();
+		}catch (Exception et){
+			System.out.println("Can't Connect"+et);
+			return null;
+		}
+		
+		try{
+			Keyspace ks = client.getKeyspace("BloggyAppy");
+            //retrieve sample data
+            ColumnParent columnParent = new ColumnParent("Authors");
+
+            /**
+             * this effect how many columns we are want to retrieve
+             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
+             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
+             */
+            SliceRange columnRange = new SliceRange();
+            columnRange.setCount(100);
+            String start="";
+            byte bStart[]=start.getBytes();
+            columnRange.setStart(bStart);
+            columnRange.setFinish(new byte[0]);
+            //effect on columns order
+            columnRange.setReversed(false);
+           //count of max retrieving keys
+            KeyRange keyRange = new KeyRange(1);
+            keyRange.setStart_key(Author);
+            keyRange.setEnd_key("");
+            SlicePredicate slicePredicate = new SlicePredicate();
+            slicePredicate.setSlice_range(columnRange);
+            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
+            
+            //printing keys with columns
+            for (String key : map.keySet()) {
+                List<Column> columns = map.get(key);
+                //print key
+                
+                Au.setname(key); //The key will be the name.
+                
+                System.out.println(key);
+                for (Column column : columns) {
+                    //print columns with values
+                	 //if (hm.containsKey(column.getName())){
+                		
+                		 String Name=string(column.getName());
+                		 String Value=string(column.getValue());
+ 
+                		 if (Name.compareTo("Twitter")==0)
+                			 Au.settwitterName(Value);
+                		 if (Name.compareTo("Email")==0)
+                			 Au.setemailName(Value);
+                		 if (Name.compareTo("Bio")==0)
+                			 Au.setbio(Value);
+                		 if (Name.compareTo("Address")==0)
+                			 Au.setaddress(Value);
+                		 if (Name.compareTo("Tel")==0)
+                			 Au.settel(Value);
+         				
+         				//}
+                	 
+                	 	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
+                }
+               
+            }
+
+            // This line makes sure that even if the client had failures and recovered, a correct
+            // releaseClient is called, on the up to date client.
+            client = ks.getClient();
+
+		}catch (Exception et){
+			System.out.println("Can't get Authors "+et);
+			return null;
+		}
+		return Au;
+	}
+	
 	
 	public void setHost(String Host){
 	  this.Host=Host;	

@@ -8,6 +8,7 @@ public class AuthorStore {
 	private String emailName;
 	private String bio;
 	private String Address;
+	private String Tel;
 	
 	public AuthorStore(){
 	
@@ -36,15 +37,19 @@ public class AuthorStore {
 	public String getaddress(){
 		return Address;
 	}
+	public String gettel(){
+		return Tel;
+	}
 	
 	//A convenient method to set all variables at once.
-	public void setAll(int numPosts, String Name,String twitterName,String emailName, String bio,String Address){
+	public void setAll(int numPosts, String Name,String twitterName,String emailName, String bio,String Address,String Tel){
 		this.Name=Name;
 		this.numPosts=numPosts;
 		this.twitterName=twitterName;
 		this.emailName=emailName;
 		this.bio=bio;
 		this.Address=Address;
+		this.Tel=Tel;
 	}
 	
 	public void setnumPosts(int Posts){
@@ -67,7 +72,10 @@ public class AuthorStore {
 		this.bio=bio;
 	}
 	public void setaddress(String address){
-		this.Address=Address;
+		this.Address=address;
+	}
+	public void settel(String tel){
+		this.Tel=tel;
 	}
 	
 }
