@@ -27,7 +27,7 @@ while (iterator.hasNext()){
 	AuthorStore md = (AuthorStore)iterator.next();
 	
 	%>
-	<%=md.getname() %> &nbsp; <%=md.getemailName() %>  <br/>
+	<a href="/jBloggyAppy/Author/<%=md.getname()%>"><%=md.getname() %></a> &nbsp; <%=md.getemailName() %>  <br/>
 	<% 
  
 }

@@ -217,7 +217,8 @@ public class AuthorConnector {
 	}
 	
 	
-	//This will add an Author  The only thing in the AuthorStore needed is the Name/key
+	//This will add an Author  The only things in the AuthorStore needed is the Name/key and email,
+	//All other are optional.
 	public boolean AddAuthor(AuthorStore Author){
 		
 		if (Author.getname() == null){

@@ -21,12 +21,12 @@ if (Author==null){
 %>
 <p>Should put the output here</p>
 
-	<%=Author.getname() %><br/>
-	<%=Author.getemailName() %>  <br/>
-	<%=Author.gettwitterName() %>  <br/>
-	<%=Author.getbio() %>  <br/>
-	<%=Author.getaddress() %>  <br/>
-	<%=Author.gettel() %>  <br/>
+Name:	<%=Author.getname() %><br/>
+Email:	<%=Author.getemailName() %>  <br/>
+Twitter:	<%=Author.gettwitterName() %>  <br/>
+Bio:	<%=Author.getbio() %>  <br/>
+Address:	<%=Author.getaddress() %>  <br/>
+Tel:	<%=Author.gettel() %>  <br/>
 	<% 
 }
 %>

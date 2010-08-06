@@ -128,15 +128,18 @@ public class Author extends HttpServlet {
 		Author.setemailName(request.getParameter("Email"));
 		Author.setaddress(request.getParameter("Address"));
 		Author.settwitterName(request.getParameter("Twitter"));
+		Author.setbio(request.getParameter("Bio"));
+		Author.settel(request.getParameter("Tel"));
 		AuthorConnector au = new AuthorConnector();
 		au.setHost("134.36.36.151");
+		
 		RequestDispatcher rd;
 		if (au.AddAuthor(Author)== true){
-			rd=request.getRequestDispatcher("RenderAuthors.jsp");
+			ReturnAllAuthors(request,response,0);  //Return as Jsp only
 		}else{
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
 		}
-		rd.forward(request,response);
+		
 	}
 
 	/**
