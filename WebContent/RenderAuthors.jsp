@@ -17,7 +17,8 @@ if (Authors==null){
 	<% 
 }else{
 %>
-<p>Should put the output here</p>
+<h1>Authors</h1>
+<p><a href="/jBloggyAppy/Post">List all Posts</a></p>
 <% 
 Iterator<AuthorStore> iterator;
 

@@ -19,8 +19,8 @@ if (Author==null){
 	<% 
 }else{
 %>
-<p>Should put the output here</p>
-
+<h1>Author</h1>
+<p><a href="/jBloggyAppy/Post/<%=Author.getname()%>">All Posts by <%=Author.getname() %></a><br/>
 Name:	<%=Author.getname() %><br/>
 Email:	<%=Author.getemailName() %>  <br/>
 Twitter:	<%=Author.gettwitterName() %>  <br/>
