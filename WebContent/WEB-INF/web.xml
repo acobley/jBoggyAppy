@@ -31,4 +31,15 @@
     <url-pattern>/Post</url-pattern>
     <url-pattern>/Post/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Article</display-name>
+    <servlet-name>Article</servlet-name>
+    <servlet-class>uk.ac.dundee.computing.aec.jBloggyAppy.Article</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Article</servlet-name>
+    <url-pattern>/Article</url-pattern>
+    <url-pattern>/Article/*</url-pattern>
+  </servlet-mapping>
 </web-app>

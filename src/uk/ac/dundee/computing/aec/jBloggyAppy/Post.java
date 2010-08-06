@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorPostsConnector;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
+
+import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.*;
 
 /**
  * Servlet implementation class Post

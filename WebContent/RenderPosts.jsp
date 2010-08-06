@@ -28,7 +28,7 @@ iterator = Posts.iterator();
 while (iterator.hasNext()){
 	String title = (String)iterator.next();
 	%>
-	<a href="/jBloggyAppy/Post/<%=title%>"><%=title%></a><br/>
+	<a href="/jBloggyAppy/Article/<%=title%>"><%=title%></a><br/>
 <% }
 }
 %>
