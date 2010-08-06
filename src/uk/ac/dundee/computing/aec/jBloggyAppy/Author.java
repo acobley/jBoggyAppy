@@ -103,6 +103,10 @@ public class Author extends HttpServlet {
 		AuthorConnector au = new AuthorConnector();
 		au.setHost("134.36.36.151");
 		AuthorStore Author = au.getAuthor(AuthorName);
+		if (Author==null){
+			Author=new AuthorStore();
+			Author.setname("Sorry name not found");
+		}
 		System.out.println("Got Author "+Author.getname()+" : "+Format);
 		System.out.flush();
 		switch(Format){

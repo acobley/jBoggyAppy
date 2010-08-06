@@ -190,6 +190,18 @@ public class AuthorConnector {
                 			 Au.setaddress(Value);
                 		 if (Name.compareTo("Tel")==0)
                 			 Au.settel(Value);
+                		 if (Name.compareTo("numPosts")==0){
+                			 long lValue=0;
+                			 try {
+                				 lValue=Long.parseLong(Value);
+                			 }catch(Exception et){
+                				 System.out.println("Can't parse long"+Value+ ":+et");
+                				 
+                			 }
+                			 
+                			 Au.setnumPosts(lValue);
+                		 }
+                			 
          				
          				//}
                 	 
@@ -271,6 +283,12 @@ public class AuthorConnector {
             	 columnPath.setColumn(columnName.getBytes());
             	 ks.insert(key, columnPath, value.getBytes());
              }
+             // And set the number of posts to 0
+             columnName = "numPosts";
+        	 Long lValue = new Long(0); 
+        	 value=lValue.toString();
+        	 columnPath.setColumn(columnName.getBytes());
+        	 ks.insert(key, columnPath, value.getBytes());
              
 		}catch (Exception et){
 			System.out.println("Can't Create a new Author "+et);
@@ -306,7 +324,24 @@ public class AuthorConnector {
         return client;
 	}
 	
-	
+	//From: http://www.captain.at/howto-java-convert-binary-data.php
+	public static long arr2long (byte[] arr, int start) {
+		int i = 0;
+		int len = 4;
+		int cnt = 0;
+		byte[] tmp = new byte[len];
+		for (i = start; i < (start + len); i++) {
+			tmp[cnt] = arr[i];
+			cnt++;
+		}
+		long accum = 0;
+		i = 0;
+		for ( int shiftBy = 0; shiftBy < 32; shiftBy += 8 ) {
+			accum |= ( (long)( tmp[i] & 0xff ) ) << shiftBy;
+			i++;
+		}
+		return accum;
+	}
 	
 
 }

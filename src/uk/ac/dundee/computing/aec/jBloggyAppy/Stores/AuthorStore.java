@@ -2,7 +2,7 @@ package uk.ac.dundee.computing.aec.jBloggyAppy.Stores;
 
 public class AuthorStore {
 	
-	private int numPosts;
+	private long numPosts;
 	private String Name;
 	private String twitterName;
 	private String emailName;
@@ -15,7 +15,7 @@ public class AuthorStore {
 	}
 	
 	
-	public int getnumPosts(){
+	public long getnumPosts(){
 		return numPosts;
 	}
 	
@@ -52,7 +52,7 @@ public class AuthorStore {
 		this.Tel=Tel;
 	}
 	
-	public void setnumPosts(int Posts){
+	public void setnumPosts(long Posts){
 		this.numPosts=Posts;
 	}
 	

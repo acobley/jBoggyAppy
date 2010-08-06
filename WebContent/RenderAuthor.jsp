@@ -27,9 +27,10 @@ Twitter:	<%=Author.gettwitterName() %>  <br/>
 Bio:	<%=Author.getbio() %>  <br/>
 Address:	<%=Author.getaddress() %>  <br/>
 Tel:	<%=Author.gettel() %>  <br/>
+NumPosts: <%=Author.getnumPosts() %>
 	<% 
 }
 %>
-
+<p></p><a href="/jBloggyAppy/Author">Return to Authors list</a></p>
 </body>
 </html>
