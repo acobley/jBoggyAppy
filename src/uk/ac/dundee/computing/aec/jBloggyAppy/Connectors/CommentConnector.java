@@ -1,5 +1,6 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
 
+import static me.prettyprint.cassandra.utils.StringUtils.bytes;
 import static me.prettyprint.cassandra.utils.StringUtils.string;
 
 import java.util.Date;
@@ -16,6 +17,7 @@ import org.apache.cassandra.thrift.SlicePredicate;
 import org.apache.cassandra.thrift.SliceRange;
 import org.apache.cassandra.thrift.SuperColumn;
 
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.CommentStore;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.CassandraClientPool;
@@ -147,6 +149,58 @@ public class CommentConnector {
 	}
 	
 	
+public boolean AddComment(String title,CommentStore Comment){
+		if (title==null){
+			return false;
+		}
+		if (Comment.getauthor() == null){
+			//If we don't have a name we can't add this user
+			return false;
+		}
+		if (Comment.getbody()==null){
+			//Same with Email, all other fields are optional
+			return false;
+		}
+		System.out.println("Comment Connector add comment to "+title);
+		
+		CassandraClient client=null;
+		try{
+			client=Connect();
+		}catch (Exception et){
+			System.out.println("Can't Connect"+et);
+			return false;
+		}
+		
+		try{
+			 Keyspace ks = client.getKeyspace("BloggyAppy");
+			
+			 	java.util.UUID timeUUID=getTimeUUID();
+	            ColumnPath cp = new ColumnPath("Comments");
+	            cp.setSuper_column(asByteArray(timeUUID));
+	            cp.setColumn(bytes("Author"));
+	            ks.insert(title, cp, bytes(Comment.getauthor()));
+	            cp.setColumn(bytes("Comment"));
+	            ks.insert(title, cp, bytes(Comment.getbody()));
+	            
+	            long now = System.currentTimeMillis();
+	             Long lnow=new Long(now);
+	             cp.setColumn(bytes("pubDate"));
+		         ks.insert(title, cp, longToByteArray(now));
+             
+		}catch (Exception et){
+			System.out.println("Can't Create a new comment "+et);
+			return false;
+		}finally{
+			try{
+				pool.releaseClient(client);
+			}catch(Exception et){
+				System.out.println("Pool acn't be released");
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public void setHost(String Host){
 		  this.Host=Host;	
 		}
@@ -189,5 +243,26 @@ public class CommentConnector {
 			  }
 			  return value;
 		 }
+		  
+		  public static java.util.UUID getTimeUUID()
+		     {
+		             return java.util.UUID.fromString(new com.eaio.uuid.UUID().toString());
+		     }
+		  
+		  public static byte[] asByteArray(java.util.UUID uuid)
+		     {
+		         long msb = uuid.getMostSignificantBits();
+		         long lsb = uuid.getLeastSignificantBits();
+		         byte[] buffer = new byte[16];
+
+		         for (int i = 0; i < 8; i++) {
+		                 buffer[i] = (byte) (msb >>> 8 * (7 - i));
+		         }
+		         for (int i = 8; i < 16; i++) {
+		                 buffer[i] = (byte) (lsb >>> 8 * (7 - i));
+		         }
+
+		         return buffer;
+		     }
 		
 }

@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CommentConnector;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.CommentStore;
 
 import java.net.URLDecoder;
@@ -69,6 +71,19 @@ public class Comment extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		CommentStore Comment =new CommentStore();
+		Comment.setauthor(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Author")));
+		Comment.setbody(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Comment")));
+		String title=(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Title")));
+		CommentConnector au = new CommentConnector();
+		au.setHost("134.36.36.151");
+		
+		RequestDispatcher rd;
+		if (au.AddComment(title,Comment)== true){
+			ReturnComments(request,response,0,title);  //Return as Jsp only
+		}else{
+			rd=request.getRequestDispatcher("RegisterUser.jsp");
+		}
 	}
 
 	/**

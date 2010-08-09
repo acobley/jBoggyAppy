@@ -38,6 +38,16 @@ Slug: <%=Article.getslug() %>
 	<% 
 }
 %>
+<form action="/jBloggyAppy/Comment" method="POST">
+
+Author:<input name="Author"></input><br/>
+
+Body:<textarea name="Comment" rows="20" cols="80"></textarea><br/>
+
+<input type="hidden" name="Title" value="<%=Article.gettitle() %>"></input>
+<input type="submit"  value="Add Comment">
+</form>
+<p><a href="/jBloggyAppy/Comment/<%=Article.gettitle()%>">Get Comments</a></p>
 <p><a href="/jBloggyAppy/AddArticle.jsp">Add a new Article</a></p>
 <p><a href="/jBloggyAppy/Author">Return to Authors list</a></p>
 </body>
