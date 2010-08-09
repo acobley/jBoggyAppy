@@ -100,6 +100,7 @@ public class CommentConnector {
 		        	            System.out.println("\tThis is a SuperColumn with "+string(sc.getName())+":"+sc.getColumns().size());
 		        	            System.out.println("------------------------------------");
 		        	            itr = cols.iterator(); 
+		        	            co=new CommentStore();
 		        	            while(itr.hasNext()) {
 
 		        	                Column col = itr.next(); 
@@ -108,7 +109,7 @@ public class CommentConnector {
 		        	                System.out.println("\t\t"+string(col.getName()) + "\t ==\t" + string(col.getValue()));
 		        	                if (colName.compareTo("Author")==0)
 		                   		 		co.setauthor(colValue);
-		                   		 	if (colName.compareTo("Body")==0)
+		                   		 	if (colName.compareTo("Comment")==0)
 		                		 		co.setbody(colValue);
 
 		                   		 	if (colName.compareTo("pubDate")==0){

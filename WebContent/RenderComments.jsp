@@ -34,12 +34,16 @@ while (iterator.hasNext()){
 	 Date:<%
 Date pubDate=comm.getpubDate();
 System.out.println("RebderArticle "+pubDate);
-SimpleDateFormat df = new SimpleDateFormat(); 
+if (pubDate!=null)
+{
+	SimpleDateFormat df = new SimpleDateFormat(); 
+
 
 %>
 <%=df.format(pubDate) %><br/>
  
 <%
+}
 }
 %>
 <hr/>
