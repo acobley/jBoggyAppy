@@ -9,6 +9,7 @@ public class ArticleStore {
 	Date pubDate;
 	String Slug;
 	
+	
 	public ArticleStore(){
 	}
 	
@@ -31,6 +32,8 @@ public class ArticleStore {
 	public void setslug(String Value){
 		this.Slug=Value;
 	}
+	
+
 	
 	public String getauthor(){
 		return Author;		

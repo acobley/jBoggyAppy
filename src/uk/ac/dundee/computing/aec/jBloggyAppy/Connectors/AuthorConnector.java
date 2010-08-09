@@ -191,21 +191,13 @@ public class AuthorConnector {
                 		 if (Name.compareTo("Tel")==0)
                 			 Au.settel(Value);
                 		 if (Name.compareTo("numPosts")==0){
-                			 long lValue=0;
-                			 try {
-                				 lValue=Long.parseLong(Value);
-                			 }catch(Exception et){
-                				 System.out.println("Can't parse long"+Value+ ":+et");
-                				 
-                			 }
-                			 
+                			 long lValue=byteArrayToLong(column.getValue());
+                			 System.out.println("Author Connnector getAuthor "+lValue);
                 			 Au.setnumPosts(lValue);
                 		 }
-                			 
-         				
-         				//}
+ 
                 	 
-                	 	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
+                	 	System.out.println("Author Connnector getAuthor \t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
                 }
                
             }
@@ -285,10 +277,10 @@ public class AuthorConnector {
              }
              // And set the number of posts to 0
              columnName = "numPosts";
-        	 Long lValue = new Long(0); 
-        	 value=lValue.toString();
+        	 long lValue = 0;
+        	 byte[] bValue=longToByteArray(lValue);
         	 columnPath.setColumn(columnName.getBytes());
-        	 ks.insert(key, columnPath, value.getBytes());
+        	 ks.insert(key, columnPath, bValue);
              
 		}catch (Exception et){
 			System.out.println("Can't Create a new Author "+et);
@@ -342,6 +334,30 @@ public class AuthorConnector {
 		}
 		return accum;
 	}
+	
+	  private  byte[] longToByteArray(long value)
+	    {
+		 byte[] buffer = new byte[8]; //longs are 8 bytes I believe
+		 for (int i = 7; i >= 0; i--) { //fill from the right
+			 buffer[i]= (byte)(value & 0x00000000000000ff); //get the bottom byte
+			 
+			 //System.out.print(""+Integer.toHexString((int)buffer[i])+",");
+	        value=value >>> 8; //Shift the value right 8 bits
+	    }
+	    return buffer;
+	    }
+	  
+	  private long byteArrayToLong(byte[] buffer){
+		  long value=0;
+		  long multiplier=1;
+		  for (int i = 7; i >= 0; i--) { //get from the right
+			 
+			  //System.out.println(Long.toHexString(multiplier)+"\t"+Integer.toHexString((int)buffer[i]));
+			  value=value+(buffer[i] & 0xff)*multiplier; // add the value * the hex mulitplier
+			  multiplier=multiplier <<8;
+		  }
+		  return value;
+	 }
 	
 
 }

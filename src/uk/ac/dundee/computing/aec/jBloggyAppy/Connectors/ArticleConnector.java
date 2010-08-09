@@ -95,6 +95,7 @@ public class ArticleConnector {
            		 	    long lDate=byteArrayToLong(bDate);
            		 		Article.setpubDate(new Date(lDate));
            		 	}
+           		 	
            		 	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
            	    
            		 	//Don't forget about the Date !
@@ -126,7 +127,7 @@ public class ArticleConnector {
 	
 	//Title, Body and Author and are all needed
 	public boolean AddArticle(ArticleStore Article){
-		
+		System.out.println("Add Article");
 		if (Article.gettitle() == null){
 			//If we don't have a name we can't add this post
 			return false;
@@ -186,28 +187,7 @@ public class ArticleConnector {
              
              //Pubdate is set here
              columnName = "pubDate";
-             
-             //Lets test the long convesion routines.
-             /*
-             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-             long tempnow = System.currentTimeMillis();
-             Date tempDate= new Date(tempnow);
-             System.out.println("now "+tempnow);
-             System.out.println("Native Date "+tempDate);
-             
-             //Convert to Byte Array and print
-             byte btempnow[]=longToByteArray(tempnow);
-             System.out.print("Byte Array ");
-             displayByteArrayAsHex(btempnow);
-             
-             //and Convert it back again
-             long converted =byteArrayToLong(btempnow);
-             tempDate=new Date(converted);
-             System.out.println("converted now "+converted);
-             System.out.println("converted  Date "+tempDate);
-             System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-             */
-             
+   
             	 long now = System.currentTimeMillis();
 	             Long lnow=new Long(now);
 	             System.out.println("ArticleConnector addArticle lnow "+lnow);
@@ -216,12 +196,43 @@ public class ArticleConnector {
             	 columnPath.setColumn(columnName.getBytes());
             	 ks.insert(key, columnPath, longToByteArray(now));
            
-             // And set the number of posts to 0
+             // And increment the number of Posts in the Author
+            //Get the author Key and numPosts Value
+            long lValue=1;
+            ColumnParent authorColumnParent = new ColumnParent("Authors");	 
+            SliceRange columnRange = new SliceRange();
+            columnRange.setCount(1);
+            String start="numPosts";
+            byte bStart[]=start.getBytes();
+            columnRange.setStart(bStart);
+            columnRange.setFinish(bStart);
+
+           //We only want one key
+            KeyRange keyRange = new KeyRange(1);
+            keyRange.setStart_key(authorValue);
+            keyRange.setEnd_key(authorValue);
+            SlicePredicate slicePredicate = new SlicePredicate();
+            slicePredicate.setSlice_range(columnRange);
+            Map<String, List<Column>> map = ks.getRangeSlices(authorColumnParent, slicePredicate, keyRange);
+            for (String authorKey : map.keySet()) {
+                List<Column> columns = map.get(authorKey);
+                System.out.println(authorKey);
+                for (Column column : columns) {
+  
+                	String Name=string(column.getName());
+                	lValue=byteArrayToLong(column.getValue());
+                	lValue++;
+                	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
+                }
+            }
+  
+           	 ColumnPath authorColumnPath = new ColumnPath("Authors");
+             
              columnName = "numPosts";
-        	 Long lValue = new Long(0); 
-        	 value=lValue.toString();
-        	 columnPath.setColumn(columnName.getBytes());
-        	 ks.insert(key, columnPath, value.getBytes());
+             byte[] bValue=longToByteArray(lValue);
+        	 
+        	 authorColumnPath.setColumn(columnName.getBytes());
+        	 ks.insert(authorValue, authorColumnPath, bValue);
         	 
         	 
         	 //Now we need to deal with the tags and authors indexes
