@@ -42,4 +42,15 @@
     <url-pattern>/Article</url-pattern>
     <url-pattern>/Article/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Comment</display-name>
+    <servlet-name>Comment</servlet-name>
+    <servlet-class>uk.ac.dundee.computing.aec.jBloggyAppy.Comment</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Comment</servlet-name>
+    <url-pattern>/Comment</url-pattern>
+    <url-pattern>/Comment/*</url-pattern>
+  </servlet-mapping>
 </web-app>

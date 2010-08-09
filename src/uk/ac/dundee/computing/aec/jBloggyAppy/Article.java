@@ -46,15 +46,12 @@ public class Article extends HttpServlet {
 		//Possible Call Methods:
 		
 		// case 3
-		// /jBloggyAppy/Article/title return article (not implemented)
+		// /jBloggyAppy/Article/title return article 
 		//case 4
-		// /jBloggyAppy/Post/title/rss return all posts as RSS (not implemented)
-		// /jBloggyAppy/Post/title/json return all posts as JSON (not implemented)
-		// /jBloggyAppy/Post/title/xml return all posts as XML (not implemented)
-		
-		
-		System.out.println("Post doGet Path"+request.getRequestURI());
-		System.out.println("Post doGet uUrl"+request.getRequestURL());
+		// /jBloggyAppy/Article/title/rss return all posts as RSS (not implemented)
+		// /jBloggyAppy/Article/title/json return all posts as JSON (not implemented)
+		// /jBloggyAppy/Article/title/xml return all posts as XML (not implemented)
+
 		String args[]=SplitRequestPath(request);
 		
 		switch (args.length){
@@ -117,7 +114,7 @@ public class Article extends HttpServlet {
 		 */
 		ArticleConnector atc = new ArticleConnector();
 		atc.setHost("134.36.36.150");
-		System.out.println("Return All Posts for"+Title);
+		System.out.println("Return  Post for"+Title);
 		ArticleStore Article = atc.getArticle(Title);
 		switch(Format){
 			case 0: request.setAttribute("Article", Article);
