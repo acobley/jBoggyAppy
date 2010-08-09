@@ -14,7 +14,7 @@ Title:<input name="Title"></input><br/>
 Body:<textarea name="Body" rows="20" cols="80"></textarea><br/>
 Tags:<input name="Tags"></input><br/>
  
-<input type="submit"  value="Add Yourself">
+<input type="submit"  value="Add Article">
 </form>
 </body>
 </html>
