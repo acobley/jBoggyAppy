@@ -1,7 +1,20 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
 
+import static me.prettyprint.cassandra.utils.StringUtils.string;
+
+import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.cassandra.thrift.Column;
+import org.apache.cassandra.thrift.ColumnParent;
+import org.apache.cassandra.thrift.ColumnPath;
+import org.apache.cassandra.thrift.KeyRange;
+import org.apache.cassandra.thrift.SlicePredicate;
+import org.apache.cassandra.thrift.SliceRange;
+import org.apache.cassandra.thrift.SuperColumn;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.CommentStore;
 import me.prettyprint.cassandra.service.CassandraClient;
@@ -23,16 +36,99 @@ public class CommentConnector {
 	
 	public List<CommentStore> getComments(String articleTitle){
 		List <CommentStore> Comments =  new LinkedList<CommentStore>();
+		CommentStore co=null;
 		CassandraClient client=null;
 		try{
 			client=Connect();
 		}catch (Exception et){
-			System.out.println("get Author Posts Can't Connect"+et);
+			System.out.println("get comments Can't Connect"+et);
 			return null;
 		}
 		System.out.println("Comments for article"+articleTitle);
 		try{
 			Keyspace ks = client.getKeyspace("BloggyAppy");
+			
+			 SlicePredicate slicePredicate = new SlicePredicate();
+	            SliceRange columnRange = new SliceRange();
+	            SliceRange sliceRange = new SliceRange();
+	            sliceRange.setStart(new byte[] {});
+	            sliceRange.setFinish(new byte[] {});
+	           
+	            ColumnParent columnParent = new ColumnParent("Comments");
+	            ColumnPath cp = new ColumnPath("Comments");
+      
+	            SuperColumn sc = null;            
+	            List<Column> cols;
+	            Iterator<Column> itr; 
+
+	            
+	            /*****************************************/
+	        	System.out.println("  Get SuperColumns /*****************************************/");
+	            
+	        	 columnRange.setStart(new byte[0]);  //We'll get t all.
+		         columnRange.setFinish(new byte[0]); //Sets the last column name to get
+		            //effect on columns order
+		         columnRange.setReversed(false); //Changes order of columns returned in keyset
+		         columnRange.setCount(10); //Maximum number of columsn in a key
+		         KeyRange superkeyRange = new KeyRange(200);  //Maximum number of keys to get
+		         superkeyRange.setStart_key(articleTitle);
+		         superkeyRange.setEnd_key(articleTitle);
+		            
+		         slicePredicate.setSlice_range(columnRange);
+		         Map<String, List<SuperColumn>> supermap =ks.getSuperRangeSlices(columnParent, slicePredicate, superkeyRange);
+		         for (String key : supermap.keySet()) {
+		                List<SuperColumn> columns = supermap.get(key);
+		                //print key
+		                System.out.println("Key "+key);
+		                for (SuperColumn column : columns) {
+		                    //print columns with values
+		                	
+		                	if (column==null){
+		                		System.out.println("Column is Null");
+		                	}else{
+		                		String Name=string(column.getName()) ;
+		                		
+		                		System.out.println("Name"+Name);
+		                		
+		                		//The Column Name is a UUID so we don't convert it to a string
+		                		cp.setSuper_column(column.getName());
+		        	            sc = ks.getSuperColumn(key, cp);
+		        	          
+		        	            sc.getColumns();
+		        	            
+		        	            cols=sc.getColumns();
+		        	            System.out.println("\tThis is a SuperColumn with "+string(sc.getName())+":"+sc.getColumns().size());
+		        	            System.out.println("------------------------------------");
+		        	            itr = cols.iterator(); 
+		        	            while(itr.hasNext()) {
+
+		        	                Column col = itr.next(); 
+		        	                String colName=string(col.getName());
+		                   		 	String colValue=string(col.getValue());
+		        	                System.out.println("\t\t"+string(col.getName()) + "\t ==\t" + string(col.getValue()));
+		        	                if (colName.compareTo("Author")==0)
+		                   		 		co.setauthor(colValue);
+		                   		 	if (colName.compareTo("Body")==0)
+		                		 		co.setbody(colValue);
+
+		                   		 	if (colName.compareTo("pubDate")==0){
+		                   		 		byte[] bDate=col.getValue();
+		                   		 	    long lDate=byteArrayToLong(bDate);
+		                   		 		co.setpubDate(new Date(lDate));
+		                   		 	}
+		        	            
+		        	            }
+		        	            Comments.add(co);
+	                		
+		                	}
+		                }
+		            }
+			
+			
+			
+			
+			
+			
 		}catch (Exception et){
 			System.out.println("Can't get Authors "+et);
 			return null;
