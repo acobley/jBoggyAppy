@@ -14,6 +14,7 @@ import javax.servlet.RequestDispatcher;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.*;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
+
 /**
  * Servlet implementation class Author
  */
@@ -128,12 +129,12 @@ public class Author extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		AuthorStore Author =new AuthorStore();
-		Author.setname(request.getParameter("Name"));
-		Author.setemailName(request.getParameter("Email"));
-		Author.setaddress(request.getParameter("Address"));
-		Author.settwitterName(request.getParameter("Twitter"));
-		Author.setbio(request.getParameter("Bio"));
-		Author.settel(request.getParameter("Tel"));
+		Author.setname(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Name")));
+		Author.setemailName(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Email")));
+		Author.setaddress(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Address")));
+		Author.settwitterName(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Twitter")));
+		Author.setbio(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Bio")));
+		Author.settel(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Tel")));
 		AuthorConnector au = new AuthorConnector();
 		au.setHost("134.36.36.151");
 		

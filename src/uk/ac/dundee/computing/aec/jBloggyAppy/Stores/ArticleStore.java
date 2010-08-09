@@ -25,6 +25,7 @@ public class ArticleStore {
 		this.Tags=Value;
 	}
 	public void setpubDate(Date Value){
+		System.out.println("Article Store setPubDate "+Value);
 		this.pubDate=Value;
 	}
 	public void setslug(String Value){
@@ -44,6 +45,7 @@ public class ArticleStore {
 		return Tags;		
 	}
 	public Date getpubDate(){
+		System.out.println("Article Store getPubDate "+pubDate);
 		return pubDate;		
 	}
 	public String getslug(){
