@@ -49,7 +49,7 @@ public class Article extends HttpServlet {
 		// /jBloggyAppy/Article/title return article 
 		//case 4
 		// /jBloggyAppy/Article/title/rss return all posts as RSS (not implemented)
-		// /jBloggyAppy/Article/title/json return all posts as JSON (not implemented)
+		// /jBloggyAppy/Article/title/json return all posts as JSON 
 		// /jBloggyAppy/Article/title/xml return all posts as XML (not implemented)
 
 		String args[]=SplitRequestPath(request);
@@ -61,6 +61,15 @@ public class Article extends HttpServlet {
 					System.out.println("Args 2 is"+args[2]);
 					ReturnArticle(request, response,0,args[2]);
 					
+					break;
+			case 4: if (FormatsMap.containsKey(args[3])){ //all authors in a format
+						Integer IFormat= (Integer)FormatsMap.get(args[3]);
+						switch((int)IFormat.intValue()){
+							case 3:ReturnArticle(request, response,3,args[2]); //Only JSON implemented for now
+							break;
+							default:break;
+						}
+					}
 					break;
 			default: System.out.println("Wrong number of arguements in doGet Author "+request.getRequestURI()+" : "+args.length);
 					break;
@@ -128,6 +137,10 @@ public class Article extends HttpServlet {
 					}catch(Exception et){
 						System.out.println("Can't forward to "+ rd.toString());
 					}
+					break;
+			case 3: request.setAttribute("Data", Article);
+					RequestDispatcher rdjson=request.getRequestDispatcher("/RenderJson");
+					rdjson.forward(request,response);
 					break;
 			default: System.out.println("Invalid Format in ReturnArticle ");
 		}

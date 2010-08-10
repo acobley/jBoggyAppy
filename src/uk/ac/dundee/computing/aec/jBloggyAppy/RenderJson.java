@@ -1,5 +1,9 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy;
-import org.json.*;
+
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 
@@ -9,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.lang.reflect.*;
+import java.io.PrintWriter;
 
 /**
  * Servlet implementation class RenderJson
@@ -35,21 +40,40 @@ public class RenderJson extends HttpServlet {
 		if (className.compareTo("java.util.LinkedList")==0){ //Deal with a linked list
 			List Data = (List)request.getAttribute("Data");
 			Iterator iterator;
-			
+			JSONObject JSONObj=new JSONObject();
+			JSONArray Parts=new JSONArray();
 			iterator = Data.iterator();     
 			while (iterator.hasNext()){
 				Object Value=iterator.next();
-				ProcessObject(Value);
+				JSONObject obj =ProcessObject(Value);
+				try {
+					Parts.put(obj);
+				}catch (Exception JSONet){
+         			System.out.println("JSON Fault"+ JSONet);
+         		}
 			}
+			try{
+				JSONObj.put("Data",Parts);
+			}catch (Exception JSONet){
+     			System.out.println("JSON Fault"+ JSONet);
+     		}
+			if (JSONObj!=null){
+				PrintWriter out = response.getWriter();
+				out.print(JSONObj);
+			}	
 			
 		}else{
 			Object Data=request.getAttribute("Data");
-			ProcessObject(Data);
+			JSONObject obj =ProcessObject(Data);
+			if (obj!=null){
+				PrintWriter out = response.getWriter();
+				out.print(obj);
+			}	
 		}
 	}
 	
-	private void ProcessObject(Object Value){
-		
+	private JSONObject  ProcessObject(Object Value){
+		JSONObject Record=new JSONObject();
 		
 		try {
             Class c = Value.getClass();
@@ -60,6 +84,7 @@ public class RenderJson extends HttpServlet {
             	 String mName=m.getName();
             	
                  if (mName.startsWith("get")==true){
+                	 String Name=mName.replaceFirst("get", "");
                 	 //Class pvec[] = m.getParameterTypes(); //Get the Parameter types
 	                 //for (int j = 0; j < pvec.length; j++)
 	                 //   System.out.println("param #" + j + " " + pvec[j]);
@@ -69,7 +94,14 @@ public class RenderJson extends HttpServlet {
 	                
 	                 Object rt= meth.invoke(Value);
 	                 if (rt!=null){
-	                	 System.out.println(mName+" Return "+ rt);
+	                	 System.out.println(Name+" Return "+ rt);
+	                	 try{
+	                		 Record.put(Name,rt);
+	                	 }catch (Exception JSONet){
+	             			System.out.println("JSON Fault"+ JSONet);
+	             			return null;
+	             		}
+	             	
 	                 }
                  }
             }
@@ -79,6 +111,7 @@ public class RenderJson extends HttpServlet {
          catch (Throwable e) {
             System.err.println(e);
          }
+         return Record;
 	}
 
 

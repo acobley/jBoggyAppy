@@ -60,6 +60,15 @@ public class Comment extends HttpServlet {
 					ReturnComments(request, response,0,args[2]);
 					
 					break;
+			case 4: if (FormatsMap.containsKey(args[3])){ //all authors in a format
+					Integer IFormat= (Integer)FormatsMap.get(args[3]);
+					switch((int)IFormat.intValue()){
+						case 3:ReturnComments(request, response,3,args[2]); //Only JSON implemented for now
+						break;
+						default:break;
+					}
+			}
+			break;
 			default: System.out.println("Wrong number of arguements in doGet Author "+request.getRequestURI()+" : "+args.length);
 					break;
 		}
@@ -124,6 +133,10 @@ public class Comment extends HttpServlet {
 					}catch(Exception et){
 						System.out.println("Can't forward to "+ rd.toString());
 					}
+					break;
+			case 3: request.setAttribute("Data", Comments);
+					RequestDispatcher rdjson=request.getRequestDispatcher("/RenderJson");
+					rdjson.forward(request,response);
 					break;
 			default: System.out.println("Invalid Format in ReturnArticle ");
 		}

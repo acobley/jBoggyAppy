@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+     <%@ page import="uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*" %>
     <%@ page import="java.util.*" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -11,7 +12,7 @@
 
 
 <%
-List<String> Posts = (List<String>)request.getAttribute("Posts");
+List<PostStore> Posts = (List<PostStore>)request.getAttribute("Posts");
 String Author=(String)request.getAttribute("Author");
 if (Posts==null){
  %>
@@ -21,14 +22,14 @@ if (Posts==null){
 %>
 <h1>Posts for <%=Author %></h1>
 <% 
-Iterator<String> iterator;
+Iterator<PostStore> iterator;
 
 
 iterator = Posts.iterator();     
 while (iterator.hasNext()){
-	String title = (String)iterator.next();
+	PostStore Post = (PostStore)iterator.next();
 	%>
-	<a href="/jBloggyAppy/Article/<%=title%>"><%=title%></a><br/>
+	<a href="/jBloggyAppy/Article/<%=Post.gettitle()%>"><%=Post.gettitle()%></a><br/>
 <% }
 }
 %>

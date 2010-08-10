@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.*;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
 
 /**
  * Servlet implementation class Post
@@ -45,8 +46,11 @@ public class Post extends HttpServlet {
 		// case 3
 		// /jBloggyAppy/Post/xml return all posts as XML (not implemented)
 		// /jBloggyAppy/Post/rss return all posts as RSS (not implemented)
-		// /jBloggyAppy/Post/json return all posts as JSON (not implemented)
-		// /jBloggyAppy/Post/name return author and redirect to jsp
+		// /jBloggyAppy/Post/json return all posts as JSON 
+		// /jBloggyAppy/Post/name return all posts with that tag and redirect to jsp
+		// /jBloggyAppy/Post/name/xml return all posts with that tag and as xml (not implemented)
+		// /jBloggyAppy/Post/name/rss return all posts with that tag and as rss (not implemented)
+		// /jBloggyAppy/Post/name/json return all posts with that tag and as json (not implemented)
 		
 		System.out.println("Post doGet Path"+request.getRequestURI());
 		System.out.println("Post doGet uUrl"+request.getRequestURL());
@@ -63,6 +67,15 @@ public class Post extends HttpServlet {
 						System.out.println("Args 2 is"+args[2]);
 						ReturnAllPosts(request, response,0,args[2]);
 					}
+					break;
+			case 4: if (FormatsMap.containsKey(args[3])){ //all authors in a format
+						Integer IFormat= (Integer)FormatsMap.get(args[3]);
+						switch((int)IFormat.intValue()){
+							case 3:ReturnAllPosts(request, response,3,args[2]); //Only JSON implemented for now
+							break;
+							default:break;
+						}
+					}		
 					break;
 			default: System.out.println("Wrong number of arguements in doGet Author "+request.getRequestURI()+" : "+args.length);
 					break;
@@ -87,7 +100,7 @@ public class Post extends HttpServlet {
 		AuthorPostsConnector aup = new AuthorPostsConnector();
 		aup.setHost("134.36.36.150");
 		System.out.println("Return All Posts for"+Author);
-		List<String> Posts = aup.getAuthorPosts(Author);
+		List<PostStore> Posts = aup.getAuthorPosts(Author);
 		switch(Format){
 			case 0: request.setAttribute("Posts", Posts);
 					request.setAttribute("Author",Author);
@@ -99,6 +112,10 @@ public class Post extends HttpServlet {
 					}catch(Exception et){
 						System.out.println("Can't forward to "+ rd.toString());
 					}
+					break;
+			case 3: request.setAttribute("Data", Posts);
+					RequestDispatcher rdjson=request.getRequestDispatcher("/RenderJson");
+					rdjson.forward(request,response);
 					break;
 			default: System.out.println("Invalid Format in ReturnAllPosts ");
 		}

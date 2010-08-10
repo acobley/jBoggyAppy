@@ -19,6 +19,7 @@ import me.prettyprint.cassandra.service.Keyspace;
 import me.prettyprint.cassandra.service.PoolExhaustedException;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
 public class AuthorPostsConnector {
 	
 	String Host=null;
@@ -30,9 +31,9 @@ public class AuthorPostsConnector {
 	}
 	//Get a list of all posts by an Author
 	// use _All-Authors_ for all Authors
-	public List<String> getAuthorPosts(String Author) 
+	public List<PostStore> getAuthorPosts(String Author) 
 	{
-		List <String> Posts =  new LinkedList<String>();
+		List <PostStore> Posts =  new LinkedList<PostStore>();
 		
 		CassandraClient client=null;
 		try{
@@ -76,15 +77,19 @@ public class AuthorPostsConnector {
                 List<Column> columns = map.get(key);
                 //print key
                 System.out.println("Key " +key);
+                
                 for (Column column : columns) {
+                	PostStore pStore =new PostStore();
                     //print columns with values
                 	java.util.UUID Name=toUUID(column.getName()) ;
                 	String Value=string(column.getValue());
              
                     System.out.println("\t" + Name + "\t ==\t" + Value);
-                   Posts.add(Value);
+                    pStore.settitle(string(column.getValue()));
+                    Posts.add(pStore);
                 
                 }
+               
             }
 
             // This line makes sure that even if the client had failures and recovered, a correct
