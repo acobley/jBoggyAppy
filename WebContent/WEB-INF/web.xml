@@ -53,4 +53,15 @@
     <url-pattern>/Comment</url-pattern>
     <url-pattern>/Comment/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>RenderJson</display-name>
+    <servlet-name>RenderJson</servlet-name>
+    <servlet-class>uk.ac.dundee.computing.aec.jBloggyAppy.RenderJson</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RenderJson</servlet-name>
+    <url-pattern>/RenderJson</url-pattern>
+    <url-pattern>/RenderJson/*</url-pattern>
+  </servlet-mapping>
 </web-app>

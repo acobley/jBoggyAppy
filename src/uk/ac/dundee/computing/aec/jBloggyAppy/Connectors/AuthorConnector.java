@@ -100,6 +100,19 @@ public class AuthorConnector {
                 			 Au.setaddress(Value);
                 		 if (Name.compareTo("Tel")==0)
                 			 Au.settel(Value);
+                		 
+                		 if (Name.compareTo("numPosts")==0){
+                			 byte[] bValue=column.getValue();
+                			 long lValue=0;
+                			 System.out.println("Byte Length "+bValue.length);
+                			 if (bValue.length==8){// Protect against bad data
+                				lValue =byteArrayToLong(column.getValue());
+                				 System.out.println("Author Connnector getAuthor numPosts"+lValue);
+                			 }
+                			 Au.setnumPosts(lValue);
+                		 }
+                		 
+                		 System.out.flush();
          				
          				//}
                 	 
