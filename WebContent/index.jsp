@@ -8,8 +8,8 @@
 </head>
 <body>
 <h2>JBloggy Appy</h2>
-<p><a href="Login.jsp">Login in via Yahoo! or Goolge</a></p>
-<p><a href="/Post">List all Posts</a></p>
+<p><a href="Login.jsp">Login in via Yahoo! or Google</a></p>
+<p><a href="Post">List all Posts</a></p>
 <p><a href="/RegisterUser.jsp">Register a user (must be logged in)</a></p>
 </body>
 </html>

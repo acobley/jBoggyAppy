@@ -10,6 +10,7 @@
 <title>Mr Bloggy Article</title>
 </head>
 <body>
+<%@include file="Header.jsp" %>
 <% 
 System.out.println("In RenderArticle.jsp");
 ArticleStore Article = (ArticleStore)request.getAttribute("Article");
