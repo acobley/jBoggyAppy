@@ -1,4 +1,7 @@
-<%@include file="LogCheck.jsp" %>
+<jsp:useBean id="User"
+class="uk.ac.dundee.computing.aec.jBloggyAppy.Stores.UserStore"
+scope="session"
+></jsp:useBean>
 <%
 if (User.isloggedIn()==true){
 %>
