@@ -47,7 +47,7 @@ public class Comment extends HttpServlet {
 		// /jBloggyAppy/Comment/title return article 
 		//case 4
 		// /jBloggyAppy/Comment/title/rss return all posts as RSS (not implemented)
-		// /jBloggyAppy/Comment/title/json return all posts as JSON (not implemented)
+		// /jBloggyAppy/Comment/title/json return all posts as JSON 
 		// /jBloggyAppy/Comment/title/xml return all posts as XML (not implemented)
 
 		String args[]=SplitRequestPath(request);

@@ -50,7 +50,7 @@ public class Post extends HttpServlet {
 		// /jBloggyAppy/Post/name return all posts with that tag and redirect to jsp
 		// /jBloggyAppy/Post/name/xml return all posts with that tag and as xml (not implemented)
 		// /jBloggyAppy/Post/name/rss return all posts with that tag and as rss (not implemented)
-		// /jBloggyAppy/Post/name/json return all posts with that tag and as json (not implemented)
+		// /jBloggyAppy/Post/name/json return all posts with that tag and as json 
 		
 		System.out.println("Post doGet Path"+request.getRequestURI());
 		System.out.println("Post doGet uUrl"+request.getRequestURL());

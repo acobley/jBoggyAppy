@@ -1,0 +1,64 @@
+jBloggyAppy is a implementation of a Blog using Java and Cassandra as the dB backend.  It is 
+bassed on the blog post by Arin Sarkissin http://arin.me/blog/wtf-is-a-supercolumn-cassandra-data-model
+
+Login uses OpenId
+
+JBloggy Appy uses the following java servelts as controllers:
+
+Article.  
+GET //Possible Call Methods:
+
+		
+		// case 3
+		// /jBloggyAppy/Article/title return article 
+		//case 4
+		// /jBloggyAppy/Article/title/rss returns article as RSS (not implemented)
+		// /jBloggyAppy/Article/title/json returns article as JSON 
+		// /jBloggyAppy/Article/title/xml return arti le as XML (not implemented)
+POST
+	Add an Article
+		
+Author.
+GET //Possible Call Methods:
+		//case 2
+		// /jBloggyAppy/Author List all Authors and redirect to jsp
+		// case 3
+		// /jBloggyAppy/Author/xml return all authors as XML (not implemented)
+		// /jBloggyAppy/Author/rss return all authors as RSS (not implemented)
+		// /jBloggyAppy/Author/json return all authors as JSON (not implemented)
+		// /jBloggyAppy/Author/name return author and redirect to jsp
+		//case 4
+		// /jBloggyAppy/Author/name/xml return author and return xml (not implemented)
+		// /jBloggyAppy/Author/name/rss return author and return rss (not implemented)
+		// /jBloggyAppy/Author/name/json return author and return json 
+POST Add a Author
+
+Comment:
+Get //Possible Call Methods:
+		
+		// case 3
+		// /jBloggyAppy/Comment/title return article 
+		//case 4
+		// /jBloggyAppy/Comment/title/rss return all posts as RSS (not implemented)
+		// /jBloggyAppy/Comment/title/json return all posts as JSON 
+		// /jBloggyAppy/Comment/title/xml return all posts as XML (not implemented)
+POST: Add a Comment
+
+
+Post (get posts by Author name
+GET //Possible Call Methods:
+		//case 2
+		// /jBloggyAppy/Post List all Posts and redirect to jsp
+		// case 3
+		// /jBloggyAppy/Post/xml return all posts as XML (not implemented)
+		// /jBloggyAppy/Post/rss return all posts as RSS (not implemented)
+		// /jBloggyAppy/Post/json return all posts as JSON 
+		// /jBloggyAppy/Post/name return all posts with that tag and redirect to jsp
+		// /jBloggyAppy/Post/name/xml return all posts with that tag and as xml (not implemented)
+		// /jBloggyAppy/Post/name/rss return all posts with that tag and as rss (not implemented)
+		// /jBloggyAppy/Post/name/json return all posts with that tag and as json 
+
+POST No Action
+
+RenderJson
+Takes any Store beans and convert it to JSON.  Use these options for most Javascript/AJAX

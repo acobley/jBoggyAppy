@@ -49,9 +49,9 @@ public class Article extends HttpServlet {
 		// case 3
 		// /jBloggyAppy/Article/title return article 
 		//case 4
-		// /jBloggyAppy/Article/title/rss return all posts as RSS (not implemented)
-		// /jBloggyAppy/Article/title/json return all posts as JSON 
-		// /jBloggyAppy/Article/title/xml return all posts as XML (not implemented)
+		// /jBloggyAppy/Article/title/rss returns article as RSS (not implemented)
+		// /jBloggyAppy/Article/title/json returns article as JSON 
+		// /jBloggyAppy/Article/title/xml return arti le as XML (not implemented)
 
 		String args[]=SplitRequestPath(request);
 		
