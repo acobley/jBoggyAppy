@@ -9,11 +9,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.RequestDispatcher;
 
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.*;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.UserStore;
 
 /**
  * Servlet implementation class Author
@@ -152,7 +154,15 @@ public class Author extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		AuthorStore Author =new AuthorStore();
-		Author.setname(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Name")));
+		RequestDispatcher rd;
+		HttpSession session=request.getSession();
+		UserStore lc =(UserStore)session.getAttribute("User");
+		if (lc==null){
+			rd=request.getRequestDispatcher("RegisterUser.jsp");
+			rd.forward(request,response);
+		}
+		Author.setname(lc.getname());
+		//Author.setname(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Name")));
 		Author.setemailName(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Email")));
 		Author.setaddress(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Address")));
 		Author.settwitterName(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Twitter")));
@@ -161,11 +171,12 @@ public class Author extends HttpServlet {
 		AuthorConnector au = new AuthorConnector();
 		au.setHost("134.36.36.151");
 		
-		RequestDispatcher rd;
+		
 		if (au.AddAuthor(Author)== true){
 			ReturnAllAuthors(request,response,0);  //Return as Jsp only
 		}else{
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
+			rd.forward(request,response);
 		}
 		
 	}

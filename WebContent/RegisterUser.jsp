@@ -9,10 +9,11 @@
 <body>
 <h2>Add a new User</h2>
 <div>
-
+<%@include file="LogCheck.jsp" %>
+<P>Fill in the form to register <%= User.getname()%></P>
 <form action="/jBloggyAppy/Author" method="POST">
 
-Name:<input name="Name"></input><br/>
+
 Address:<input name="Address"></input><br/>
 Tel:<input name="Tel"></input><br/>
 Emai:<input name="Email"></input><br/>

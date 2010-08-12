@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.ArticleConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
@@ -82,8 +83,16 @@ public class Article extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
+		RequestDispatcher rd;
 		ArticleStore Article =new ArticleStore();
-		Article.setauthor(request.getParameter(org.apache.commons.lang.StringEscapeUtils.escapeHtml("Author")));
+		//Article.setauthor(request.getParameter(org.apache.commons.lang.StringEscapeUtils.escapeHtml("Author")));
+		HttpSession session=request.getSession();
+		UserStore lc =(UserStore)session.getAttribute("User");
+		if (lc==null){
+			rd=request.getRequestDispatcher("RegisterUser.jsp");
+			rd.forward(request,response);
+		}
+		Article.setauthor(lc.getname());
 		Article.settitle(request.getParameter(org.apache.commons.lang.StringEscapeUtils.escapeHtml("Title")));
 		Article.setbody(request.getParameter(org.apache.commons.lang.StringEscapeUtils.escapeHtml("Body")));
 		Article.settags(request.getParameter(org.apache.commons.lang.StringEscapeUtils.escapeHtml("Tags")));
@@ -91,11 +100,12 @@ public class Article extends HttpServlet {
 		ArticleConnector au = new ArticleConnector();
 		au.setHost("134.36.36.151");
 		
-		RequestDispatcher rd;
+		
 		if (au.AddArticle(Article)== true){
 			ReturnArticle(request,response,0,Article.gettitle());  //Return as Jsp only
 		}else{
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
+			rd.forward(request,response);
 		}
 	}
 

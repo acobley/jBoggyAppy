@@ -33,7 +33,7 @@ while (iterator.hasNext()){
 	 <%=comm.getbody() %>  <br/>
 	 Date:<%
 Date pubDate=comm.getpubDate();
-System.out.println("RebderArticle "+pubDate);
+System.out.println("RebderComments "+pubDate);
 if (pubDate!=null)
 {
 	SimpleDateFormat df = new SimpleDateFormat(); 

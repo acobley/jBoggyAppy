@@ -7,9 +7,10 @@
 <title>Add A New Article</title>
 </head>
 <body>
+<%@include file="LogCheck.jsp" %>
 <form action="/jBloggyAppy/Article" method="POST">
 
-Author:<input name="Author"></input><br/>
+
 Title:<input name="Title"></input><br/>
 Body:<textarea name="Body" rows="20" cols="80"></textarea><br/>
 Tags:<input name="Tags"></input><br/>

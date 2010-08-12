@@ -173,7 +173,7 @@ public class AuthorConnector {
            //count of max retrieving keys
             KeyRange keyRange = new KeyRange(1);
             keyRange.setStart_key(Author);
-            keyRange.setEnd_key("");
+            keyRange.setEnd_key(Author);
             SlicePredicate slicePredicate = new SlicePredicate();
             slicePredicate.setSlice_range(columnRange);
             Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);

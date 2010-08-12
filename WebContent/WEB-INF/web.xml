@@ -64,4 +64,15 @@
     <url-pattern>/RenderJson</url-pattern>
     <url-pattern>/RenderJson/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Login</display-name>
+    <servlet-name>Login</servlet-name>
+    <servlet-class>uk.ac.dundee.computing.aec.jBloggyAppy.Login</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Login</servlet-name>
+    <url-pattern>/Login</url-pattern>
+    <url-pattern>/Login/*</url-pattern>
+  </servlet-mapping>
 </web-app>
