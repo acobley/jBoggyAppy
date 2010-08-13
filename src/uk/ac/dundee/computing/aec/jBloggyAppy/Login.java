@@ -56,9 +56,10 @@ public class Login extends HttpServlet {
     public Login() {
         super();
         // TODO Auto-generated constructor stub
+        
         manager = new OpenIdManager();
-        manager.setRealm("http://localhost:8080/");
-        manager.setReturnTo("http://localhost:8080/jBloggyAppy/Login");
+        manager.setRealm("http://134.36.37.221/");
+        manager.setReturnTo("http://134.36.37.221/jBloggyAppy/Login");
         
     }
 
