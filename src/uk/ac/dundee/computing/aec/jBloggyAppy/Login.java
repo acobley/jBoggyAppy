@@ -1,6 +1,8 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy;
 
 import java.io.IOException;
+
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -58,8 +60,10 @@ public class Login extends HttpServlet {
         // TODO Auto-generated constructor stub
         
         manager = new OpenIdManager();
-        manager.setRealm("http://134.36.37.221/");
-        manager.setReturnTo("http://134.36.37.221/jBloggyAppy/Login");
+        //manager.setRealm("http://134.36.37.221/");
+        //manager.setReturnTo("http://134.36.37.221/jBloggyAppy/Login");
+       
+       
         
     }
 
@@ -73,6 +77,17 @@ public class Login extends HttpServlet {
 		
 		// jBloggyAppy/Login/Yahoo
 		// jBloggyAppy/Login/Google
+		System.out.println("URL = "+request.getRequestURL());
+		System.out.println("URI = "+request.getRequestURI());
+		
+		System.out.println("Server = "+request.getServerName());
+		System.out.println("Protocol = "+request.getProtocol());
+		System.out.println("Port = "+request.getServerPort());
+		
+		String sRealm="http://"+request.getServerName()+":"+request.getServerPort()+"/";
+		System.out.println("srealm"+sRealm);
+		manager.setRealm(sRealm);
+        manager.setReturnTo(sRealm+"jBloggyAppy/Login");
 		
 		String args[]=SplitRequestPath(request);
 		String op=null;
