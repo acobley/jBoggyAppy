@@ -85,5 +85,7 @@
     <servlet-name>Tag</servlet-name>
     <url-pattern>/Tag</url-pattern>
     <url-pattern>/Tag/*</url-pattern>
+    <url-pattern>/Tags</url-pattern>
+    <url-pattern>/Tags/*</url-pattern>
   </servlet-mapping>
 </web-app>

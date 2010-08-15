@@ -19,6 +19,7 @@ import org.apache.cassandra.thrift.SlicePredicate;
 import org.apache.cassandra.thrift.SliceRange;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.TagStore;
 
 public class TagPostConnector {
 
@@ -109,6 +110,86 @@ public class TagPostConnector {
 		}
 		return Posts;
 	}
+	
+	
+	
+	public List<TagStore> getTagNames() 
+	{
+		List <TagStore> Tags =  new LinkedList<TagStore>();
+		
+		CassandraClient client=null;
+		try{
+			client=Connect();
+		}catch (Exception et){
+			System.out.println("get Tags Can't Connect"+et);
+			return null;
+		}
+	
+		try{
+			Keyspace ks = client.getKeyspace("BloggyAppy");
+            //retrieve sample data
+            ColumnParent columnParent = new ColumnParent("TaggedPosts");
+            SlicePredicate slicePredicate = new SlicePredicate();
+
+            /**
+             * this effect how many columns we are want to retrieve
+             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
+             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
+             */
+            SliceRange columnRange = new SliceRange();
+            
+            //For these beware of the reversed state
+            String ColumnLimiter="";
+            //columnRange.setStart(ColumnLimiter.getBytes());  //Sets the first column name to get
+            columnRange.setStart(ColumnLimiter.getBytes());  //We'll get them all.
+            columnRange.setFinish(ColumnLimiter.getBytes()); //Sets the last column name to get
+            
+            //effect on columns order
+            columnRange.setReversed(false); //Changes order of columns returned in keyset
+            columnRange.setCount(0); //Maximum we will only get 200 posts
+
+            slicePredicate.setSlice_range(columnRange);
+
+            //count of max retrieving keys
+            KeyRange keyRange = new KeyRange(1000);  //Maximum number of keys to get
+            keyRange.setStart_key("");
+            keyRange.setEnd_key("");
+            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
+
+            //printing keys with columns
+            for (String key : map.keySet()) {
+                List<Column> columns = map.get(key);
+                //print key
+                System.out.println("Key " +key);
+                
+                
+                	TagStore tStore =new TagStore();
+                    
+                    tStore.settag(key);
+                    Tags.add(tStore);
+                
+                
+               
+            }
+
+            // This line makes sure that even if the client had failures and recovered, a correct
+            // releaseClient is called, on the up to date client.
+            client = ks.getClient();
+            
+		}catch (Exception et){
+			System.out.println("Can't get Authors "+et);
+			return null;
+		}finally{
+			try{
+				pool.releaseClient(client);
+			}catch(Exception et){
+				System.out.println("Pool acn't be released");
+				return null;
+			}
+		}
+		return Tags;
+	}
+	
 	
 	public void setHost(String Host){
 		  this.Host=Host;	

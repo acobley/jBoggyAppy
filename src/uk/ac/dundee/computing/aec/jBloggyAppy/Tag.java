@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.TagPostConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.TagStore;
 
 /**
  * Servlet implementation class Tag
@@ -20,15 +21,19 @@ import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
 public class Tag extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	 private HashMap FormatsMap = new HashMap();
+	 private HashMap ActionMap = new HashMap();
     /**
      * @see HttpServlet#HttpServlet()
      */
     public Tag() {
         super();
         // TODO Auto-generated constructor stub FormatsMap.put("Jsp", 0);
-      	 FormatsMap.put("xml", 1);
-       	 FormatsMap.put("rss", 2);
-       	 FormatsMap.put("json",3);
+      	ActionMap.put("Tag",1);
+      	ActionMap.put("Tags",2);
+        
+        FormatsMap.put("xml", 1);
+       	FormatsMap.put("rss", 2);
+       	FormatsMap.put("json",3);
     }
 
     /**
@@ -39,30 +44,49 @@ public class Tag extends HttpServlet {
 		
 		//Possible Call Methods:
 		//case 2
-		// /jBloggyAppy/Tag List all Tags and redirect to jsp
+		// /jBloggyAppy/Tag List all posts for default Tag and redirect to jsp
+		// /jBloggyAppy/Tags List all Tags and redirect to jsp
 		// case 3
-		// /jBloggyAppy/Tag/xml return all tags as XML (not implemented)
-		// /jBloggyAppy/Tag/rss return all tags as RSS (not implemented)
-		// /jBloggyAppy/Tag/json return all tags as JSON 
-		// /jBloggyAppy/Tag/name return all tags with that tag and redirect to jsp
-		// /jBloggyAppy/Tag/name/xml return all tags with that author and as xml (not implemented)
-		// /jBloggyAppy/Tag/name/rss return all tags with that author and as rss (not implemented)
-		// /jBloggyAppy/Tag/name/json return all tags with that author and as json 
+		// /jBloggyAppy/Tag/xml return posts for default Tag  as XML (not implemented)
+		// /jBloggyAppy/Tag/rss return posts for default Tag as RSS (not implemented)
+		// /jBloggyAppy/Tag/json return posts for default Tag  as JSON 
+		// /jBloggyAppy/Tags/xml return all Tags  as XML (not implemented)
+		// /jBloggyAppy/Tags/rss return all Tags  as RSS (not implemented)
+		// /jBloggyAppy/Tags/json return all Tags   as JSON 
+		// /jBloggyAppy/Tag/name return all posts with that tag and redirect to jsp
+		// case 4
+		// /jBloggyAppy/Tag/name/xml return all posts with that author and as xml (not implemented)
+		// /jBloggyAppy/Tag/name/rss return all posts with that author and as rss (not implemented)
+		// /jBloggyAppy/Tag/name/json return all posts with that author and as json 
 		
 		System.out.println("Tag doGet Path"+request.getRequestURI());
 		System.out.println("Tag doGet uUrl"+request.getRequestURL());
 		String args[]=SplitRequestPath(request);
-		
+		Integer iAction=0;
 		switch (args.length){
 			
-			case 2:  ReturnAllTags(request, response,0,"_No-Tag_");
-					break;
-			case 3: if (FormatsMap.containsKey(args[2])){ //all tags in a format
+			case 2: iAction=(Integer)ActionMap.get(args[1]);	
+					switch((int)iAction.intValue()){
+					case 1: ReturnAllTags(request, response,0,"_No-Tag_"); //Tag
+						break;
+					case 2:ReturnTagNames(request,response,0); 
+						break; //Get all Tag Names
+					}
+			case 3: iAction=(Integer)ActionMap.get(args[1]);
+					switch((int)iAction.intValue()){
+					case 1:
+							if (FormatsMap.containsKey(args[2])){ //all tags in a format
+								Integer IFormat= (Integer)FormatsMap.get(args[2]);
+								ReturnAllTags(request, response,(int)IFormat.intValue(),"_No-Tag_");
+							}else {// must be single user
+								System.out.println("Args 2 is"+args[2]);
+								ReturnAllTags(request, response,0,args[2]);
+							}
+							break;
+					case 2: //Get all tag names as JSON
 						Integer IFormat= (Integer)FormatsMap.get(args[2]);
-						ReturnAllTags(request, response,(int)IFormat.intValue(),"_No-Tag_");
-					}else {// must be single user
-						System.out.println("Args 2 is"+args[2]);
-						ReturnAllTags(request, response,0,args[2]);
+						ReturnTagNames(request,response,(int)IFormat.intValue() );
+						break;
 					}
 					break;
 			case 4: if (FormatsMap.containsKey(args[3])){ //all authors in a format
@@ -82,7 +106,7 @@ public class Tag extends HttpServlet {
 	/**
 	 * @see HttpServlet#doTag(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doTag(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 	}
 	
@@ -111,6 +135,39 @@ public class Tag extends HttpServlet {
 					}
 					break;
 			case 3: request.setAttribute("Data", Posts);
+					RequestDispatcher rdjson=request.getRequestDispatcher("/RenderJson");
+					rdjson.forward(request,response);
+					break;
+			default: System.out.println("Invalid Format in ReturnAllTags ");
+		}
+	
+	}
+	
+	public void ReturnTagNames(HttpServletRequest request, HttpServletResponse response,int Format) throws ServletException, IOException{
+		/*  Format is one of
+		 *  0 jsp
+		 *  1 xml
+		 *  2 rss
+		 *  3 json
+		 * 
+		 */
+		TagPostConnector aup = new TagPostConnector();
+		aup.setHost("134.36.36.150");
+		System.out.println("Return All Tags ");
+		List<TagStore> Tags = aup.getTagNames();
+		switch(Format){
+			case 0: request.setAttribute("Tags", Tags);
+					
+					RequestDispatcher rd=null;
+					try {
+						rd=request.getRequestDispatcher("/RenderTags.jsp");
+					
+						rd.forward(request,response);
+					}catch(Exception et){
+						System.out.println("Can't forward to "+ rd.toString());
+					}
+					break;
+			case 3: request.setAttribute("Data", Tags);
 					RequestDispatcher rdjson=request.getRequestDispatcher("/RenderJson");
 					rdjson.forward(request,response);
 					break;
