@@ -9,7 +9,12 @@
 <body>
 <h2>JBloggy Appy</h2>
 <p><a href="Login.jsp">Login in via Yahoo! or Google</a></p>
+
+<p><a href="RegisterUser.jsp">Register Yoursefl (must be logged in)</a></p>
 <p><a href="Post">List all Posts</a></p>
-<p><a href="/RegisterUser.jsp">Register a user (must be logged in)</a></p>
+<p><a href="Author">List all Authors</a></p>
+<p><a href="Tags">List all Tags</a></p>
+<p><a href="AddArticle.jsp">Add an Article (must be logged in and registered</a></p>
+
 </body>
 </html>

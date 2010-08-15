@@ -10,13 +10,13 @@
 <h2>Add a new User</h2>
 <div>
 <%@include file="LogCheck.jsp" %>
-<P>Fill in the form to register <%= User.getname()%></P>
+<P>Fill in the form to register <%= User.getemail()%></P>
 <form action="/jBloggyAppy/Author" method="POST">
 
-
+Name:<input name="Name"></input><br/>
 Address:<input name="Address"></input><br/>
 Tel:<input name="Tel"></input><br/>
-Emai:<input name="Email"></input><br/>
+
 Twitter:<input name="Twitter"></input><br/>
 Bio:<input name="Bio"></input><br/>
 <input type="submit"  value="Add Yourself">

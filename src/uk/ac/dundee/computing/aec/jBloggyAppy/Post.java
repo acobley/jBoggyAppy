@@ -1,6 +1,7 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -123,7 +124,8 @@ public class Post extends HttpServlet {
 	}
 	
 	private String[] SplitRequestPath(HttpServletRequest request){
-		String args[] = null;
+String args[] = null;
+		 
 		
 		StringTokenizer st = SplitString(request.getRequestURI());
 		args = new String[st.countTokens()];
@@ -132,7 +134,15 @@ public class Post extends HttpServlet {
 		int argv=0;
 		while (st.hasMoreTokens ()) {;
 			args[argv]=new String();
+						
 			args[argv]=st.nextToken();
+			try{
+				System.out.println("String was "+URLDecoder.decode(args[argv],"UTF-8"));
+				args[argv]=URLDecoder.decode(args[argv],"UTF-8");
+				
+			}catch(Exception et){
+				System.out.println("Bad URL Encoding"+args[argv]);
+			}
 			argv++;
 			} 
 

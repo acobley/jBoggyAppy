@@ -1,6 +1,7 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -161,9 +162,10 @@ public class Author extends HttpServlet {
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
 			rd.forward(request,response);
 		}
-		Author.setname(lc.getname());
-		//Author.setname(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Name")));
-		Author.setemailName(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Email")));
+		//Author.setname(lc.getname());
+		Author.setemailName(lc.getemail());
+		Author.setname(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Name")));
+		//Author.setemailName(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Email")));
 		Author.setaddress(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Address")));
 		Author.settwitterName(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Twitter")));
 		Author.setbio(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Bio")));
@@ -173,6 +175,7 @@ public class Author extends HttpServlet {
 		
 		
 		if (au.AddAuthor(Author)== true){
+			lc.setloggedIn(Author.getname(), Author.getemailName());
 			ReturnAllAuthors(request,response,0);  //Return as Jsp only
 		}else{
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
@@ -198,6 +201,7 @@ public class Author extends HttpServlet {
 	
 	private String[] SplitRequestPath(HttpServletRequest request){
 		String args[] = null;
+		 
 		
 		StringTokenizer st = SplitString(request.getRequestURI());
 		args = new String[st.countTokens()];
@@ -206,7 +210,15 @@ public class Author extends HttpServlet {
 		int argv=0;
 		while (st.hasMoreTokens ()) {;
 			args[argv]=new String();
+						
 			args[argv]=st.nextToken();
+			try{
+				System.out.println("String was "+URLDecoder.decode(args[argv],"UTF-8"));
+				args[argv]=URLDecoder.decode(args[argv],"UTF-8");
+				
+			}catch(Exception et){
+				System.out.println("Bad URL Encoding"+args[argv]);
+			}
 			argv++;
 			} 
 

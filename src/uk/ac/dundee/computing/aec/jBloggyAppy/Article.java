@@ -72,7 +72,7 @@ public class Article extends HttpServlet {
 						}
 					}
 					break;
-			default: System.out.println("Wrong number of arguements in doGet Author "+request.getRequestURI()+" : "+args.length);
+			default: System.out.println("Wrong number of arguements in doGet Article "+request.getRequestURI()+" : "+args.length);
 					break;
 		}
 	}

@@ -259,6 +259,7 @@ public class AuthorConnector {
 		try{
 			 Keyspace ks = client.getKeyspace("BloggyAppy");
 			 ColumnPath columnPath = new ColumnPath("Authors");
+			 ColumnPath emailColumnPath = new ColumnPath("RegisteredOpenIdEmails");
 			 String key = Author.getname();
              String columnName = "Email";
              String value = Author.getemailName();
@@ -294,6 +295,13 @@ public class AuthorConnector {
         	 byte[] bValue=longToByteArray(lValue);
         	 columnPath.setColumn(columnName.getBytes());
         	 ks.insert(key, columnPath, bValue);
+        	 
+        	 //Now add the email and name to the RegisteredOpenIdEmails index column family
+        	 value=Author.getname();
+        	 columnName="RegisteredAuthor";
+             emailColumnPath.setColumn(columnName.getBytes());
+             key=Author.getemailName();
+             ks.insert(key, emailColumnPath, value.getBytes());
              
 		}catch (Exception et){
 			System.out.println("Can't Create a new Author "+et);
@@ -309,6 +317,84 @@ public class AuthorConnector {
 		return true;
 	}
 	
+	public AuthorStore getAuthorFromEmail(String Email){
+		System.out.println("Author conector getAuthorfromEmail "+Email);
+		AuthorStore Au=new AuthorStore();
+		CassandraClient client=null;
+		try{
+			client=Connect();
+		}catch (Exception et){
+			System.out.println("Can't Connect"+et);
+			return null;
+		}
+		
+		try{
+			Keyspace ks = client.getKeyspace("BloggyAppy");
+            //retrieve sample data
+            ColumnParent columnParent = new ColumnParent("RegisteredOpenIdEmails");
+
+            /**
+             * this effect how many columns we are want to retrieve
+             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
+             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
+             */
+            SliceRange columnRange = new SliceRange();
+            columnRange.setCount(2);
+            String start="";
+            byte bStart[]=start.getBytes();
+            columnRange.setStart(bStart);
+            columnRange.setFinish(new byte[0]);
+            //effect on columns order
+            columnRange.setReversed(false);
+           //count of max retrieving keys
+            KeyRange keyRange = new KeyRange(1);
+            keyRange.setStart_key(Email);
+            keyRange.setEnd_key(Email);
+            SlicePredicate slicePredicate = new SlicePredicate();
+            slicePredicate.setSlice_range(columnRange);
+            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
+            
+            //printing keys with columns
+            for (String key : map.keySet()) {
+                List<Column> columns = map.get(key);
+                //print key
+                
+                Au.setemailName(key); //The key will be the emailname.
+                
+                System.out.println(key);
+                for (Column column : columns) {
+                    //print columns with values
+                	 //if (hm.containsKey(column.getName())){
+                		
+                		 String Name=string(column.getName());
+                		 String Value=string(column.getValue());
+ 
+                		 if (Name.compareTo("RegisteredAuthor")==0)
+                			 Au.setname(Value);
+                		 
+                	 
+                	 	System.out.println("Author Connnector getAuthor \t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
+                }
+               
+            }
+
+            // This line makes sure that even if the client had failures and recovered, a correct
+            // releaseClient is called, on the up to date client.
+            client = ks.getClient();
+
+		}catch (Exception et){
+			System.out.println("Can't get Authors "+et);
+			return null;
+		}finally{
+			try{
+				pool.releaseClient(client);
+			}catch(Exception et){
+				System.out.println("Pool can't be released");
+				return null;
+			}
+		}
+		return Au;
+	}
 	
 	public void setHost(String Host){
 	  this.Host=Host;	

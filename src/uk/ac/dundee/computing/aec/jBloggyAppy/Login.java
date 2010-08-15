@@ -151,15 +151,15 @@ public class Login extends HttpServlet {
 			session.setAttribute("User", lc);
 			//response.sendRedirect("/nosession.jsp?Page=ChecklDapLogin");
 		}
-		String Author=auth.getEmail();
-		lc.setloggedIn(Author);
+		String Email=auth.getEmail();
+		lc.setloggedIn("",Email);
 		System.out.println("Login "+lc.getname());
 		//Check to see if user is registered,  You can login but not be registered
 		AuthorConnector au = new AuthorConnector();
 		
 		au.setHost("134.36.36.151");
 		RequestDispatcher rd=null;
-		AuthorStore ars=au.getAuthor(Author);
+		AuthorStore ars=au.getAuthorFromEmail(Email);
 		if (ars.getname()== null){
 			System.out.println("Not Registered");
 			System.out.flush();
@@ -170,8 +170,9 @@ public class Login extends HttpServlet {
 				System.out.println("Can't forward in login servlet"+et);
 			}
 		}
-		
-		
+		//Now we are logged in and registered then we can set them both
+		lc.setloggedIn(ars.getname(),Email);
+		System.out.println("Login "+lc.getname());
 		
 		//System.out.println(request.getContextPath());
 		

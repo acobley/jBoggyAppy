@@ -8,6 +8,7 @@
 </head>
 <body>
 <%@include file="LogCheck.jsp" %>
+<h2>Add Article for <%=User.getname() %>(<%=User.getemail() %>)</h2>
 <form action="/jBloggyAppy/Article" method="POST">
 
 
