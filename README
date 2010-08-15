@@ -60,5 +60,25 @@ GET //Possible Call Methods:
 
 POST No Action
 
+Tag
+NOTE, this servlet cna be called as tag (lists posts with that tag) and Tags lists the current name of Tags
+
+//Possible Call Methods:
+		//case 2
+		// /jBloggyAppy/Tag List all posts for default Tag and redirect to jsp
+		// /jBloggyAppy/Tags List all Tags and redirect to jsp
+		// case 3
+		// /jBloggyAppy/Tag/xml return posts for default Tag  as XML (not implemented)
+		// /jBloggyAppy/Tag/rss return posts for default Tag as RSS (not implemented)
+		// /jBloggyAppy/Tag/json return posts for default Tag  as JSON 
+		// /jBloggyAppy/Tags/xml return all Tags  as XML (not implemented)
+		// /jBloggyAppy/Tags/rss return all Tags  as RSS (not implemented)
+		// /jBloggyAppy/Tags/json return all Tags   as JSON 
+		// /jBloggyAppy/Tag/name return all posts with that tag and redirect to jsp
+		// case 4
+		// /jBloggyAppy/Tag/name/xml return all posts with that author and as xml (not implemented)
+		// /jBloggyAppy/Tag/name/rss return all posts with that author and as rss (not implemented)
+		// /jBloggyAppy/Tag/name/json return all posts with that author and as json 
+
 RenderJson
 Takes any Store beans and convert it to JSON.  Use these options for most Javascript/AJAX
