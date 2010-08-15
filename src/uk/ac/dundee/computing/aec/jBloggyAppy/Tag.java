@@ -11,30 +11,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.*;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.TagPostConnector;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
 
 /**
- * Servlet implementation class Post
+ * Servlet implementation class Tag
  */
-public class Post extends HttpServlet {
+public class Tag extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	 private HashMap FormatsMap = new HashMap();
-       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Post() {
+    public Tag() {
         super();
-        // TODO Auto-generated constructor stub
-        FormatsMap.put("Jsp", 0);
-   	 FormatsMap.put("xml", 1);
-   	 FormatsMap.put("rss", 2);
-   	 FormatsMap.put("json",3);
+        // TODO Auto-generated constructor stub FormatsMap.put("Jsp", 0);
+      	 FormatsMap.put("xml", 1);
+       	 FormatsMap.put("rss", 2);
+       	 FormatsMap.put("json",3);
     }
 
-	/**
+    /**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -42,54 +39,54 @@ public class Post extends HttpServlet {
 		
 		//Possible Call Methods:
 		//case 2
-		// /jBloggyAppy/Post List all Posts and redirect to jsp
+		// /jBloggyAppy/Tag List all Tags and redirect to jsp
 		// case 3
-		// /jBloggyAppy/Post/xml return all posts as XML (not implemented)
-		// /jBloggyAppy/Post/rss return all posts as RSS (not implemented)
-		// /jBloggyAppy/Post/json return all posts as JSON 
-		// /jBloggyAppy/Post/name return all posts with that tag and redirect to jsp
-		// /jBloggyAppy/Post/name/xml return all posts with that author and as xml (not implemented)
-		// /jBloggyAppy/Post/name/rss return all posts with that author and as rss (not implemented)
-		// /jBloggyAppy/Post/name/json return all posts with that author and as json 
+		// /jBloggyAppy/Tag/xml return all tags as XML (not implemented)
+		// /jBloggyAppy/Tag/rss return all tags as RSS (not implemented)
+		// /jBloggyAppy/Tag/json return all tags as JSON 
+		// /jBloggyAppy/Tag/name return all tags with that tag and redirect to jsp
+		// /jBloggyAppy/Tag/name/xml return all tags with that author and as xml (not implemented)
+		// /jBloggyAppy/Tag/name/rss return all tags with that author and as rss (not implemented)
+		// /jBloggyAppy/Tag/name/json return all tags with that author and as json 
 		
-		System.out.println("Post doGet Path"+request.getRequestURI());
-		System.out.println("Post doGet uUrl"+request.getRequestURL());
+		System.out.println("Tag doGet Path"+request.getRequestURI());
+		System.out.println("Tag doGet uUrl"+request.getRequestURL());
 		String args[]=SplitRequestPath(request);
 		
 		switch (args.length){
 			
-			case 2:  ReturnAllPosts(request, response,0,"_All-Authors_");
+			case 2:  ReturnAllTags(request, response,0,"_No-Tag_");
 					break;
-			case 3: if (FormatsMap.containsKey(args[2])){ //all posts in a format
+			case 3: if (FormatsMap.containsKey(args[2])){ //all tags in a format
 						Integer IFormat= (Integer)FormatsMap.get(args[2]);
-						ReturnAllPosts(request, response,(int)IFormat.intValue(),"_All-Authors_");
+						ReturnAllTags(request, response,(int)IFormat.intValue(),"_No-Tag_");
 					}else {// must be single user
 						System.out.println("Args 2 is"+args[2]);
-						ReturnAllPosts(request, response,0,args[2]);
+						ReturnAllTags(request, response,0,args[2]);
 					}
 					break;
 			case 4: if (FormatsMap.containsKey(args[3])){ //all authors in a format
 						Integer IFormat= (Integer)FormatsMap.get(args[3]);
 						switch((int)IFormat.intValue()){
-							case 3:ReturnAllPosts(request, response,3,args[2]); //Only JSON implemented for now
+							case 3:ReturnAllTags(request, response,3,args[2]); //Only JSON implemented for now
 							break;
 							default:break;
 						}
 					}		
 					break;
-			default: System.out.println("Wrong number of arguements in doGet Author "+request.getRequestURI()+" : "+args.length);
+			default: System.out.println("Wrong number of arguements in doGet Tag "+request.getRequestURI()+" : "+args.length);
 					break;
 		}
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doTag(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doTag(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 	}
 	
-	public void ReturnAllPosts(HttpServletRequest request, HttpServletResponse response,int Format,String Author) throws ServletException, IOException{
+	public void ReturnAllTags(HttpServletRequest request, HttpServletResponse response,int Format,String Tag) throws ServletException, IOException{
 		/*  Format is one of
 		 *  0 jsp
 		 *  1 xml
@@ -97,27 +94,27 @@ public class Post extends HttpServlet {
 		 *  3 json
 		 * 
 		 */
-		AuthorPostsConnector aup = new AuthorPostsConnector();
+		TagPostConnector aup = new TagPostConnector();
 		aup.setHost("134.36.36.150");
-		System.out.println("Return All Posts for"+Author);
-		List<PostStore> Posts = aup.getAuthorPosts(Author);
+		System.out.println("Return All Tags for"+Tag);
+		List<PostStore> Tags = aup.getTagPosts(Tag);
 		switch(Format){
-			case 0: request.setAttribute("Posts", Posts);
-					request.setAttribute("Author",Author);
+			case 0: request.setAttribute("Tags", Tags);
+					request.setAttribute("Author",Tag);
 					RequestDispatcher rd=null;
 					try {
-						rd=request.getRequestDispatcher("/RenderPosts.jsp");
+						rd=request.getRequestDispatcher("/RenderTags.jsp");
 					
 						rd.forward(request,response);
 					}catch(Exception et){
 						System.out.println("Can't forward to "+ rd.toString());
 					}
 					break;
-			case 3: request.setAttribute("Data", Posts);
+			case 3: request.setAttribute("Data", Tags);
 					RequestDispatcher rdjson=request.getRequestDispatcher("/RenderJson");
 					rdjson.forward(request,response);
 					break;
-			default: System.out.println("Invalid Format in ReturnAllPosts ");
+			default: System.out.println("Invalid Format in ReturnAllTags ");
 		}
 	
 	}

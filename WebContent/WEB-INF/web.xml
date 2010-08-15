@@ -75,4 +75,15 @@
     <url-pattern>/Login</url-pattern>
     <url-pattern>/Login/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Tag</display-name>
+    <servlet-name>Tag</servlet-name>
+    <servlet-class>uk.ac.dundee.computing.aec.jBloggyAppy.Tag</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Tag</servlet-name>
+    <url-pattern>/Tag</url-pattern>
+    <url-pattern>/Tag/*</url-pattern>
+  </servlet-mapping>
 </web-app>
