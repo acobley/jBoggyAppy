@@ -97,20 +97,20 @@ public class Tag extends HttpServlet {
 		TagPostConnector aup = new TagPostConnector();
 		aup.setHost("134.36.36.150");
 		System.out.println("Return All Tags for"+Tag);
-		List<PostStore> Tags = aup.getTagPosts(Tag);
+		List<PostStore> Posts = aup.getTagPosts(Tag);
 		switch(Format){
-			case 0: request.setAttribute("Tags", Tags);
-					request.setAttribute("Author",Tag);
+			case 0: request.setAttribute("Posts", Posts);
+					request.setAttribute("Tag",Tag);
 					RequestDispatcher rd=null;
 					try {
-						rd=request.getRequestDispatcher("/RenderTags.jsp");
+						rd=request.getRequestDispatcher("/RenderTaggedArticles.jsp");
 					
 						rd.forward(request,response);
 					}catch(Exception et){
 						System.out.println("Can't forward to "+ rd.toString());
 					}
 					break;
-			case 3: request.setAttribute("Data", Tags);
+			case 3: request.setAttribute("Data", Posts);
 					RequestDispatcher rdjson=request.getRequestDispatcher("/RenderJson");
 					rdjson.forward(request,response);
 					break;
