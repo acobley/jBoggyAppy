@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CommentConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.CommentStore;
+import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
 
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ public class Comment extends HttpServlet {
      	 FormatsMap.put("xml", 1);
      	 FormatsMap.put("rss", 2);
      	 FormatsMap.put("json",3);
+     	
     }
 
 	/**
@@ -85,7 +88,7 @@ public class Comment extends HttpServlet {
 		Comment.setbody(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Comment")));
 		String title=(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Title")));
 		CommentConnector au = new CommentConnector();
-		au.setHost("134.36.36.151");
+		au.setHost(CassandraHosts.getHost());
 		
 		RequestDispatcher rd;
 		if (au.AddComment(title,Comment)== true){
@@ -118,7 +121,7 @@ public class Comment extends HttpServlet {
 		 * 
 		 */
 		CommentConnector commtc = new CommentConnector();
-		commtc.setHost("134.36.36.150");
+		commtc.setHost(CassandraHosts.getHost());
 		System.out.println("Return All comments for"+Title);
 		List<CommentStore> Comments = commtc.getComments(Title);
 		switch(Format){

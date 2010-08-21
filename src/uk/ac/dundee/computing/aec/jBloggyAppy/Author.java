@@ -98,7 +98,7 @@ public class Author extends HttpServlet {
 		 * 
 		 */
 		AuthorConnector au = new AuthorConnector();
-		au.setHost("134.36.36.151");
+		au.setHost(CassandraHosts.getHost());
 		List<AuthorStore> Authors = au.getAuthors();
 		switch(Format){
 			case 0: request.setAttribute("Authors", Authors);
@@ -124,7 +124,7 @@ public class Author extends HttpServlet {
 		 * 
 		 */
 		AuthorConnector au = new AuthorConnector();
-		au.setHost("134.36.36.151");
+		au.setHost(CassandraHosts.getHost());
 		AuthorStore Author = au.getAuthor(AuthorName);
 		if (Author==null){
 			Author=new AuthorStore();
@@ -171,7 +171,7 @@ public class Author extends HttpServlet {
 		Author.setbio(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Bio")));
 		Author.settel(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Tel")));
 		AuthorConnector au = new AuthorConnector();
-		au.setHost("134.36.36.151");
+		au.setHost(CassandraHosts.getHost());
 		
 		
 		if (au.AddAuthor(Author)== true){

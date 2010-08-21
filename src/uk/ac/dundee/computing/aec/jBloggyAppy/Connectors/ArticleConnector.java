@@ -12,7 +12,7 @@ import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.CassandraClientPool;
 import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
 import me.prettyprint.cassandra.service.Keyspace;
-import me.prettyprint.cassandra.service.PoolExhaustedException;
+
 
 import org.apache.cassandra.thrift.*;
 
@@ -22,13 +22,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
-
+import uk.ac.dundee.computing.aec.utils.*;
+import me.prettyprint.cassandra.model.HFactory;
+import me.prettyprint.cassandra.service.Cluster;
 public class ArticleConnector {
-	String Host=null;
-	CassandraClientPool pool;
+	
+	
 	
 	public ArticleConnector(){
-		pool = CassandraClientPoolFactory.INSTANCE.get();
+		
 		
 	}
 	
@@ -92,7 +94,7 @@ public class ArticleConnector {
         		 		Article.setslug(Value);
            		 	if (Name.compareTo("pubDate")==0){
            		 		byte[] bDate=column.getValue();
-           		 	    long lDate=byteArrayToLong(bDate);
+           		 	    long lDate=Convertors.byteArrayToLong(bDate);
            		 		Article.setpubDate(new Date(lDate));
            		 	}
            		 	
@@ -116,7 +118,7 @@ public class ArticleConnector {
 			return null;
 		}finally{
 			try{
-				pool.releaseClient(client);
+				CassandraHosts.releaseClient(client);
 			}catch(Exception et){
 				System.out.println("Pool can't be released");
 				return null;
@@ -194,7 +196,7 @@ public class ArticleConnector {
 	             
             	
             	 columnPath.setColumn(columnName.getBytes());
-            	 ks.insert(key, columnPath, longToByteArray(now));
+            	 ks.insert(key, columnPath, Convertors.longToByteArray(now));
            
              // And increment the number of Posts in the Author
             //Get the author Key and numPosts Value
@@ -220,7 +222,7 @@ public class ArticleConnector {
                 for (Column column : columns) {
   
                 	String Name=string(column.getName());
-                	lValue=byteArrayToLong(column.getValue());
+                	lValue=Convertors.byteArrayToLong(column.getValue());
                 	lValue++;
                 	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
                 }
@@ -229,20 +231,20 @@ public class ArticleConnector {
            	 ColumnPath authorColumnPath = new ColumnPath("Authors");
              
              columnName = "numPosts";
-             byte[] bValue=longToByteArray(lValue);
+             byte[] bValue=Convertors.longToByteArray(lValue);
         	 
         	 authorColumnPath.setColumn(columnName.getBytes());
         	 ks.insert(authorValue, authorColumnPath, bValue);
         	 
         	 
         	 //Now we need to deal with the tags and authors indexes
-        	 String[] Tags = SplitTags(Tag);
-        	 java.util.UUID timeUUID=getTimeUUID();
+        	 String[] Tags = Convertors.SplitTags(Tag);
+        	 java.util.UUID timeUUID=Convertors.getTimeUUID();
              
              for (int i=0;i<Tags.length; i++){
              	
              	String tagKey=Tags[i];
-             	tagsColumnPath.setColumn(asByteArray(timeUUID)); //This is the name of the value pair.  a time;
+             	tagsColumnPath.setColumn(Convertors.asByteArray(timeUUID)); //This is the name of the value pair.  a time;
              	
              	ks.insert(tagKey, tagsColumnPath, key.getBytes());
              	
@@ -250,7 +252,7 @@ public class ArticleConnector {
          
              
              //Now add this post to the Authors Posts column family
-             authorsColumnPath.setColumn(asByteArray(timeUUID)); 
+             authorsColumnPath.setColumn(Convertors.asByteArray(timeUUID)); 
              ks.insert(authorValue, authorsColumnPath, key.getBytes());
              
              //And do it for all others
@@ -262,7 +264,7 @@ public class ArticleConnector {
 			return false;
 		}finally{
 			try{
-				pool.releaseClient(client);
+				CassandraHosts.releaseClient(client);
 			}catch(Exception et){
 				System.out.println("Pool acn't be released");
 				return false;
@@ -273,120 +275,24 @@ public class ArticleConnector {
 	
 	
 	
-	public void setHost(String Host){
-		  this.Host=Host;	
+		
+		//This Connects to a named host.  
+	@Deprecated
+		private CassandraClient Connect(String Host) throws IllegalStateException, Exception{
+			return CassandraHosts.getClient();
+	        
 		}
 		
-		//This Connects to a named host.  A servlet can use this to load balance
-		private CassandraClient Connect(String Host) throws IllegalStateException, PoolExhaustedException, Exception{
+		
+		private CassandraClient Connect() throws IllegalStateException, Exception{
 			
-	        CassandraClient client = pool.borrowClient(Host, 9160);
-	        return client;
-		}
-		
-		//This just connects to the stored host.  This can be used so that
-		//an instance of Authorconnector always goes to the same host
-		private CassandraClient Connect() throws IllegalStateException, PoolExhaustedException, Exception{
-			System.out.println("Host "+this.Host);
-	        CassandraClient client = pool.borrowClient(this.Host, 9160);
-	        return client;
+			
+	        return CassandraHosts.getClient();
+	       
 		}
 	
-		//From: http://www.captain.at/howto-java-convert-binary-data.php
-		public static long arr2long (byte[] arr, int start) {
-			int i = 0;
-			int len = 4;
-			int cnt = 0;
-			byte[] tmp = new byte[len];
-			for (i = start; i < (start + len); i++) {
-				tmp[cnt] = arr[i];
-				cnt++;
-			}
-			long accum = 0;
-			i = 0;
-			for ( int shiftBy = 0; shiftBy < 32; shiftBy += 8 ) {
-				accum |= ( (long)( tmp[i] & 0xff ) ) << shiftBy;
-				i++;
-			}
-			return accum;
-		}
 		
-		private String[] SplitTags(String Tags){
-			String args[] = null;
-			
-			StringTokenizer st = SplitString(Tags);
-			args = new String[st.countTokens()+1];  //+1 for _No_Tag_
-			//Lets assume the number is the last argument
-			
-			int argv=0;
-			while (st.hasMoreTokens ()) {;
-				args[argv]=new String();
-				args[argv]=st.nextToken();
-				argv++;
-				} 
-			args[argv]= "_No-Tag_";
-			return args;
-			}
-			
-		  private StringTokenizer SplitString(String str){
-		  		return new StringTokenizer (str,",");
-
-		  }
 		  
-		  public static java.util.UUID getTimeUUID()
-		     {
-		             return java.util.UUID.fromString(new com.eaio.uuid.UUID().toString());
-		     }
 		  
-		  public static byte[] asByteArray(java.util.UUID uuid)
-		     {
-			  
-		         long msb = uuid.getMostSignificantBits();
-		         long lsb = uuid.getLeastSignificantBits();
-		         byte[] buffer = new byte[16];
-
-		         for (int i = 0; i < 8; i++) {
-		                 buffer[i] = (byte) (msb >>> 8 * (7 - i));
-		         }
-		         for (int i = 8; i < 16; i++) {
-		                 buffer[i] = (byte) (lsb >>> 8 * (7 - i));
-		         }
-
-		         return buffer;
-		     }
-		  
-		  private  byte[] longToByteArray(long value)
-		    {
-			 byte[] buffer = new byte[8]; //longs are 8 bytes I believe
-			 for (int i = 7; i >= 0; i--) { //fill from the right
-				 buffer[i]= (byte)(value & 0x00000000000000ff); //get the bottom byte
-				 
-				 //System.out.print(""+Integer.toHexString((int)buffer[i])+",");
-		        value=value >>> 8; //Shift the value right 8 bits
-		    }
-		    return buffer;
-		    }
-
-		 private long byteArrayToLong(byte[] buffer){
-			  long value=0;
-			  long multiplier=1;
-			  for (int i = 7; i >= 0; i--) { //get from the right
-				 
-				  //System.out.println(Long.toHexString(multiplier)+"\t"+Integer.toHexString((int)buffer[i]));
-				  value=value+(buffer[i] & 0xff)*multiplier; // add the value * the hex mulitplier
-				  multiplier=multiplier <<8;
-			  }
-			  return value;
-		 }
-		 
-		 private void displayByteArrayAsHex(byte[] buffer){
-			  int byteArrayLength=buffer.length;
-			  for (int i = 0; i < byteArrayLength; i++) {
-				  int val=(int)buffer[i];
-				 // System.out.print(Integer.toHexString(val)+",");
-			  }
-			  
-			  //System.out.println();
-		 }
 
 }

@@ -25,7 +25,9 @@ import org.expressme.openid.OpenIdException;
 import org.expressme.openid.OpenIdManager;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
+import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
 
 /**
  * Servlet implementation class Login
@@ -157,7 +159,7 @@ public class Login extends HttpServlet {
 		//Check to see if user is registered,  You can login but not be registered
 		AuthorConnector au = new AuthorConnector();
 		
-		au.setHost("134.36.36.151");
+		au.setHost(CassandraHosts.getHost());
 		RequestDispatcher rd=null;
 		AuthorStore ars=au.getAuthorFromEmail(Email);
 		if (ars.getname()== null){

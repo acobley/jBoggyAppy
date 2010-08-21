@@ -11,9 +11,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.TagPostConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.TagStore;
+import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
+
 
 /**
  * Servlet implementation class Tag
@@ -119,7 +122,7 @@ public class Tag extends HttpServlet {
 		 * 
 		 */
 		TagPostConnector aup = new TagPostConnector();
-		aup.setHost("134.36.36.150");
+		aup.setHost(CassandraHosts.getHost());
 		System.out.println("Return All Tags for"+Tag);
 		List<PostStore> Posts = aup.getTagPosts(Tag);
 		switch(Format){
@@ -152,7 +155,8 @@ public class Tag extends HttpServlet {
 		 * 
 		 */
 		TagPostConnector aup = new TagPostConnector();
-		aup.setHost("134.36.36.150");
+	
+		aup.setHost(CassandraHosts.getHost());
 		System.out.println("Return All Tags ");
 		List<TagStore> Tags = aup.getTagNames();
 		switch(Format){

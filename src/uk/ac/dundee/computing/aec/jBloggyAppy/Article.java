@@ -1,6 +1,7 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy;
 import java.net.URLDecoder;
 
+
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -12,8 +13,11 @@ import javax.servlet.http.HttpSession;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.ArticleConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
-
+import uk.ac.dundee.computing.aec.utils.Convertors;
+import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
+import static uk.ac.dundee.computing.aec.utils.Convertors.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -53,8 +57,8 @@ public class Article extends HttpServlet {
 		// /jBloggyAppy/Article/title/json returns article as JSON 
 		// /jBloggyAppy/Article/title/xml return arti le as XML (not implemented)
 
-		String args[]=SplitRequestPath(request);
-		
+		String args[]=Convertors.SplitRequestPath(request);
+			
 		switch (args.length){
 			
 			
@@ -98,7 +102,7 @@ public class Article extends HttpServlet {
 		Article.settags(request.getParameter(org.apache.commons.lang.StringEscapeUtils.escapeHtml("Tags")));
 		
 		ArticleConnector au = new ArticleConnector();
-		au.setHost("134.36.36.151");
+		//au.setHost(CassandraHosts.getHost());
 		
 		
 		if (au.AddArticle(Article)== true){
@@ -132,7 +136,7 @@ public class Article extends HttpServlet {
 		 * 
 		 */
 		ArticleConnector atc = new ArticleConnector();
-		atc.setHost("134.36.36.150");
+		//atc.setHost(CassandraHosts.getHost());
 		System.out.println("Return  Post for"+Title);
 		ArticleStore Article = atc.getArticle(Title);
 		switch(Format){
@@ -157,38 +161,5 @@ public class Article extends HttpServlet {
 	
 	}
 	
-	private String[] SplitRequestPath(HttpServletRequest request){
-		String args[] = null;
-		 
-			
-		StringTokenizer st = SplitString(request.getRequestURI());
-		args = new String[st.countTokens()];
-		//Lets assume the number is the last argument
-		
-		int argv=0;
-		while (st.hasMoreTokens ()) {;
-			args[argv]=new String();
-						
-			args[argv]=st.nextToken();
-			try{
-				System.out.println("String was "+URLDecoder.decode(args[argv],"UTF-8"));
-				args[argv]=URLDecoder.decode(args[argv],"UTF-8");
-				
-			}catch(Exception et){
-				System.out.println("Bad URL Encoding"+args[argv]);
-			}
-			argv++;
-			} 
-
-	//so now they'll be in the args array.  
-	// argv[0] should be the user directory
 	
-		return args;
-		}
-		
-	  private StringTokenizer SplitString(String str){
-	  		return new StringTokenizer (str,"/");
-
-	  }
-
 }
