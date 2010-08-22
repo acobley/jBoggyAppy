@@ -1,4 +1,5 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
+import static me.prettyprint.cassandra.model.HFactory.createRangeSlicesQuery;
 import static me.prettyprint.cassandra.utils.StringUtils.string;
 
 import java.util.HashMap;
@@ -23,7 +24,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
 import uk.ac.dundee.computing.aec.utils.*;
+import me.prettyprint.cassandra.extractors.StringExtractor;
+import me.prettyprint.cassandra.model.ColumnQuery;
+import me.prettyprint.cassandra.model.ColumnSlice;
+import me.prettyprint.cassandra.model.HColumn;
 import me.prettyprint.cassandra.model.HFactory;
+import me.prettyprint.cassandra.model.KeyspaceOperator;
+import me.prettyprint.cassandra.model.OrderedRows;
+import me.prettyprint.cassandra.model.RangeSlicesQuery;
+import me.prettyprint.cassandra.model.Result;
+import me.prettyprint.cassandra.model.Row;
 import me.prettyprint.cassandra.service.Cluster;
 public class ArticleConnector {
 	
@@ -36,93 +46,73 @@ public class ArticleConnector {
 	
 	public ArticleStore getArticle(String title){
 		ArticleStore Article= new ArticleStore();
-		CassandraClient client=null;
+		
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
 		}catch (Exception et){
 			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
 		}
 		System.out.println("Posts for Article "+title);
+		//For V2 API
+		StringExtractor se = StringExtractor.get();
 		try{
-			Keyspace ks = client.getKeyspace("BloggyAppy");
-			//retrieve sample data
-            ColumnParent columnParent = new ColumnParent("BlogEntries");
-			SlicePredicate slicePredicate = new SlicePredicate();
-
-            /**
-             * this effect how many columns we are want to retrieve
-             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
-             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
-             */
-            SliceRange columnRange = new SliceRange();
-            
-            //For these beware of the reversed state
-            //columnRange.setStart(Start.getBytes());  //Sets the first column name to get
-            columnRange.setStart(new byte[0]);  //We'll get them all.
-            columnRange.setFinish(new byte[0]); //Sets the last column name to get
-            //effect on columns order
-            columnRange.setReversed(false); //Changes order of columns returned in keyset
-            columnRange.setCount(20); //Maximum number of columsn in a key
-
-            slicePredicate.setSlice_range(columnRange);
-
-            //count of max retrieving keys
-            KeyRange keyRange = new KeyRange(1);  //Maximum number of keys to get
-            keyRange.setStart_key(title);
-            keyRange.setEnd_key(title);
-            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
-
-            //printing keys with columns
-            for (String key : map.keySet()) {
-                List<Column> columns = map.get(key);
-                //print key
-                Article.settitle(key);
-                System.out.println(key);
-                for (Column column : columns) {
-                    //print columns with values
-                	String Name=string(column.getName());
-           		 	String Value=string(column.getValue());
-
-           		 	if (Name.compareTo("Author")==0)
-           		 		Article.setauthor(Value);
-           		 	if (Name.compareTo("Body")==0)
-        		 		Article.setbody(Value);
-           		 	if (Name.compareTo("Tags")==0)
-        		 		Article.settags(Value);
-           		 	if (Name.compareTo("Slug")==0)
-        		 		Article.setslug(Value);
-           		 	if (Name.compareTo("pubDate")==0){
-           		 		byte[] bDate=column.getValue();
-           		 	    long lDate=Convertors.byteArrayToLong(bDate);
-           		 		Article.setpubDate(new Date(lDate));
-           		 	}
-           		 	
-           		 	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
-           	    
-           		 	//Don't forget about the Date !
-                
-                }
-            }
-
-            // This line makes sure that even if the client had failures and recovered, a correct
-            // releaseClient is called, on the up to date client.
-            client = ks.getClient();
 			
-			
-			
-			
-            
+			KeyspaceOperator ko = HFactory.createKeyspaceOperator("BloggyAppy", c);  //V2
+			//retrieve  data
+			RangeSlicesQuery<String, String> s=createRangeSlicesQuery(ko, se, se);
+			s.setColumnFamily("BlogEntries");
+			s.setKeys(title, ""); //Set the Key
+			s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
+			Result<OrderedRows<String, String>> r2 = s.execute();
+			OrderedRows<String, String> rows = r2.get();
+			ColumnSlice<String, String> slice;
+		    
+		    for (Row<String, String> row2 : rows) {
+		    	Article.settitle(row2.getKey());
+		      System.out.println("key "+row2.getKey());
+		      slice = row2.getColumnSlice();
+		     
+		      for (HColumn<String, String> column : slice.getColumns()) {
+		        
+		    	  	String Name=column.getName();
+         		 	String Value=column.getValue();
+
+         		 	if (Name.compareTo("Author")==0)
+         		 		Article.setauthor(Value);
+         		 	if (Name.compareTo("Body")==0)
+      		 		Article.setbody(Value);
+         		 	if (Name.compareTo("Tags")==0)
+      		 		Article.settags(Value);
+         		 	if (Name.compareTo("Slug")==0)
+      		 		Article.setslug(Value);
+         		 	if (Name.compareTo("pubDate")==0){
+         		 		
+         		 		byte[] bDate=column.getValueBytes();
+         		 	    long lDate=Convertors.byteArrayToLong(bDate);
+         		 		Article.setpubDate(new Date(lDate));
+         		 	}
+         		 	
+		          
+		        
+		      }
+		    }
+           
 		}catch (Exception et){
 			System.out.println("Can't get Article "+et);
 			return null;
 		}finally{
+			/*
 			try{
+				
 				CassandraHosts.releaseClient(client);
 			}catch(Exception et){
 				System.out.println("Pool can't be released");
 				return null;
 			}
+			*/
 		}    
 		return Article;
 	}
