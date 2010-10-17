@@ -99,7 +99,7 @@ public class Post extends HttpServlet {
 		 * 
 		 */
 		AuthorPostsConnector aup = new AuthorPostsConnector();
-		aup.setHost(CassandraHosts.getHost());
+		//aup.setHost(CassandraHosts.getHost());
 		System.out.println("Return All Posts for"+Author);
 		List<PostStore> Posts = aup.getAuthorPosts(Author);
 		switch(Format){

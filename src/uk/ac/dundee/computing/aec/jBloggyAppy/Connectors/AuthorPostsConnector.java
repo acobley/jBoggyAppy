@@ -1,32 +1,32 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
-import static me.prettyprint.cassandra.utils.StringUtils.string;
+import static me.prettyprint.cassandra.model.HFactory.createRangeSlicesQuery;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.cassandra.thrift.Column;
-import org.apache.cassandra.thrift.ColumnParent;
-import org.apache.cassandra.thrift.KeyRange;
-import org.apache.cassandra.thrift.SlicePredicate;
-import org.apache.cassandra.thrift.SliceRange;
-
+import me.prettyprint.cassandra.model.ColumnSlice;
+import me.prettyprint.cassandra.model.HColumn;
+import me.prettyprint.cassandra.model.HFactory;
+import me.prettyprint.cassandra.model.KeyspaceOperator;
+import me.prettyprint.cassandra.model.OrderedRows;
+import me.prettyprint.cassandra.model.RangeSlicesQuery;
+import me.prettyprint.cassandra.model.Result;
+import me.prettyprint.cassandra.model.Row;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.serializers.UUIDSerializer;
 import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.CassandraClientPool;
-import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
-import me.prettyprint.cassandra.service.Keyspace;
-import me.prettyprint.cassandra.service.PoolExhaustedException;
+import me.prettyprint.cassandra.service.Cluster;
+
+
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
 public class AuthorPostsConnector {
 	
-	String Host=null;
-	CassandraClientPool pool;
+	
 	
 	public AuthorPostsConnector(){
-		pool = CassandraClientPoolFactory.INSTANCE.get();
+	
 		
 	}
 	//Get a list of all posts by an Author
@@ -35,115 +35,129 @@ public class AuthorPostsConnector {
 	{
 		List <PostStore> Posts =  new LinkedList<PostStore>();
 		
-		CassandraClient client=null;
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
 		}catch (Exception et){
-			System.out.println("get Author Posts Can't Connect"+et);
+			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
 		}
 		System.out.println("Posts for Author "+Author);
+		
+		//For V2 API
+		StringSerializer se = StringSerializer.get();
+		UUIDSerializer ue = UUIDSerializer.get();
 		try{
-			Keyspace ks = client.getKeyspace("BloggyAppy");
+			
             //retrieve sample data
-            ColumnParent columnParent = new ColumnParent("AuthorPosts");
-            SlicePredicate slicePredicate = new SlicePredicate();
-
-            /**
-             * this effect how many columns we are want to retrieve
-             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
-             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
-             */
-            SliceRange columnRange = new SliceRange();
-            
-            //For these beware of the reversed state
-            //columnRange.setStart(Start.getBytes());  //Sets the first column name to get
-            columnRange.setStart(new byte[0]);  //We'll get them all.
-            columnRange.setFinish(new byte[0]); //Sets the last column name to get
-            //effect on columns order
-            columnRange.setReversed(false); //Changes order of columns returned in keyset
-            columnRange.setCount(200); //Maximum we will only get 200 posts
-
-            slicePredicate.setSlice_range(columnRange);
-
-            //count of max retrieving keys
-            KeyRange keyRange = new KeyRange(1);  //Maximum number of keys to get
-            keyRange.setStart_key(Author);
-            keyRange.setEnd_key(Author);
-            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
-
-            //printing keys with columns
-            for (String key : map.keySet()) {
-                List<Column> columns = map.get(key);
-                //print key
-                System.out.println("Key " +key);
-                
-                for (Column column : columns) {
-                	PostStore pStore =new PostStore();
-                    //print columns with values
-                	java.util.UUID Name=toUUID(column.getName()) ;
-                	String Value=string(column.getValue());
-             
-                    System.out.println("\t" + Name + "\t ==\t" + Value);
-                    pStore.settitle(string(column.getValue()));
-                    Posts.add(pStore);
-                
-                }
-               
-            }
-
-            // This line makes sure that even if the client had failures and recovered, a correct
-            // releaseClient is called, on the up to date client.
-            client = ks.getClient();
-            
+			KeyspaceOperator ko=null;
+			try {
+				ko = HFactory.createKeyspaceOperator("BloggyAppy", c);  //V2
+				
+			}catch(Exception et){
+				System.out.println("AuthorPosts KeyspaceOperator");
+				return null;
+			}
+				//retrieve  data
+			RangeSlicesQuery<String,String, String> s=null;
+			try{
+				s=createRangeSlicesQuery(ko,se, se, se);
+				
+				
+				s.setColumnFamily("AuthorPosts");
+				s.setKeys(Author,Author); //Set the Key
+				s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
+			}
+			catch(Exception et){
+				System.out.println("AuthorPosts RangeSlice Query"+et);
+				return null;
+			}
+			Result<OrderedRows<String,String, String>> r2=null;
+			OrderedRows<String, String, String> rows=null;
+			try{
+				 if (s!=null){
+					 r2 = s.execute();
+					 
+				 }else{
+					 System.out.println("RangeSliceQuery is null");
+					 return null;
+				 }
+				 if (r2!=null){
+					 rows = r2.get();
+				 }else{
+					 System.out.println("Orderd Rows is null");
+					 return null;
+				 }
+				 
+			}catch(Exception et){
+				System.out.println("AuthorPosts Result and Ordered Rows"+et);
+				return null;
+			}
+			ColumnSlice<String, String> slice;
+		
+			 for (Row<String,String, String> row2 : rows) {
+			     //Article.settitle(row2.getKey());
+			      System.out.println("key "+row2.getKey());
+			      try{
+			    	  slice = row2.getColumnSlice();
+			      }
+			      catch(Exception et){
+						System.out.println("AuthorPosts slice"+et);
+						return null;
+					}
+			      try{
+			      for (HColumn<String, String> column : slice.getColumns()) {
+			        
+			    	  	
+	         		 	PostStore pStore =new PostStore();
+	                    
+	                	//java.util.UUID Name=toUUID(column.getName()) ;
+	                	String Value=column.getValue();
+	             
+	                    System.out.println( "\t ==\t" + Value);
+	                    pStore.settitle(Value);
+	                    Posts.add(pStore);
+			      }
+			      }
+			      catch(Exception et){
+						System.out.println("AuthorPosts slice getColumns"+et);
+						return null;
+					}
+			 }
+          
 		}catch (Exception et){
-			System.out.println("Can't get Authors "+et);
+			System.out.println("Can't get posts "+et);
 			return null;
 		}finally{
-			try{
+		
+		}
+/*			try{
 				pool.releaseClient(client);
 			}catch(Exception et){
 				System.out.println("Pool acn't be released");
 				return null;
 			}
-		}
+			*/
+		
 		return Posts;
 	}
 	
-	public void setHost(String Host){
-		  this.Host=Host;	
-		}
+	
+	//This Connects to a named host.  
+@Deprecated
+	private CassandraClient Connect(String Host) throws IllegalStateException, Exception{
+		return CassandraHosts.getClient();
+        
+	}
+	
+	
+	private CassandraClient Connect() throws IllegalStateException, Exception{
 		
-		//This Connects to a named host.  A servlet can use this to load balance
-		private CassandraClient Connect(String Host) throws IllegalStateException, PoolExhaustedException, Exception{
-			
-	        CassandraClient client = pool.borrowClient(Host, 9160);
-	        return client;
-		}
 		
-		//This just connects to the stored host.  This can be used so that
-		//an instance of Authorconnector always goes to the same host
-		private CassandraClient Connect() throws IllegalStateException, PoolExhaustedException, Exception{
-			System.out.println("Host "+this.Host);
-	        CassandraClient client = pool.borrowClient(this.Host, 9160);
-	        return client;
-		}
-		
-		public static java.util.UUID toUUID( byte[] uuid )
-	    {
-	    long msb = 0;
-	    long lsb = 0;
-	    assert uuid.length == 16;
-	    for (int i=0; i<8; i++)
-	        msb = (msb << 8) | (uuid[i] & 0xff);
-	    for (int i=8; i<16; i++)
-	        lsb = (lsb << 8) | (uuid[i] & 0xff);
-	    long mostSigBits = msb;
-	    long leastSigBits = lsb;
-
-	    com.eaio.uuid.UUID u = new com.eaio.uuid.UUID(msb,lsb);
-	    return java.util.UUID.fromString(u.toString());
-	    }
+        return CassandraHosts.getClient();
+       
+	}
 	  
 
 

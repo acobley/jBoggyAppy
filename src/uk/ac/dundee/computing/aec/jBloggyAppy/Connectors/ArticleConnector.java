@@ -1,34 +1,31 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
-import static me.prettyprint.cassandra.model.HFactory.createMutator;
-import static me.prettyprint.cassandra.model.HFactory.createRangeSlicesQuery;
-import static me.prettyprint.cassandra.utils.StringUtils.string;
 
-import java.util.Date;
+import uk.ac.dundee.computing.aec.utils.*;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.*;
+import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
+
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import me.prettyprint.cassandra.model.ColumnQuery;
-import me.prettyprint.cassandra.model.ColumnSlice;
-import me.prettyprint.cassandra.model.HColumn;
-import me.prettyprint.cassandra.model.HFactory;
-import me.prettyprint.cassandra.model.KeyspaceOperator;
-import me.prettyprint.cassandra.model.Mutator;
-import me.prettyprint.cassandra.model.OrderedRows;
-import me.prettyprint.cassandra.model.RangeSlicesQuery;
-import me.prettyprint.cassandra.model.Result;
-import me.prettyprint.cassandra.model.Row;
-import me.prettyprint.cassandra.serializers.LongSerializer;
+import java.util.Date;
+ 
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.beans.HColumn;
+ 
+//import me.prettyprint.hector.api.beans.KeyspaceOperator;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.query.RangeSlicesQuery;
+import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.UUIDSerializer;
 import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.Cluster;
+//import me.prettyprint.cassandra.service.Cluster;
+import me.prettyprint.cassandra.service.*;
+import me.prettyprint.hector.api.mutation.*;
 
-import org.apache.cassandra.thrift.Column;
-import org.apache.cassandra.thrift.ColumnParent;
-import org.apache.cassandra.thrift.ColumnPath;
-import org.apache.cassandra.thrift.KeyRange;
-import org.apache.cassandra.thrift.SlicePredicate;
-import org.apache.cassandra.thrift.SliceRange;
+ 
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.ArticleStore;
 import uk.ac.dundee.computing.aec.utils.Convertors;
@@ -50,30 +47,43 @@ public class ArticleConnector {
 		try{
 			
 			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
 			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
 		}
+		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+		
+		
 		System.out.println("Posts for Article "+title);
-		//For V2 API
+		//For V2 API 0.7 build
 		StringSerializer se = StringSerializer.get();
 		try{
-			
-			KeyspaceOperator ko = HFactory.createKeyspaceOperator("BloggyAppy", c);  //V2
+			OrderedRows<String, String, String> rows = null;
+			ColumnSlice<String, String> slice=null;
+			try{
+			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+			ko.setConsistencyLevelPolicy(mcl);
 			//retrieve  data
 			RangeSlicesQuery<String,String, String> s=createRangeSlicesQuery(ko,se, se, se);
+			
 			s.setColumnFamily("BlogEntries");
+			//s.setColumnNames(columnNames)
 			s.setKeys(title, ""); //Set the Key
 			s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
-			Result<OrderedRows<String,String, String>> r2 = s.execute();
-			OrderedRows<String, String, String> rows = r2.get();
-			ColumnSlice<String, String> slice;
-		    
+			QueryResult<OrderedRows<String,String, String>> r2 = s.execute();
+			rows = r2.get();
+			
+			}catch(Exception et){
+				System.out.println("Cant make Query on Article connector"+et);
+				return null;
+			}
 		    for (Row<String,String, String> row2 : rows) {
 		    	Article.settitle(row2.getKey());
 		      System.out.println("key "+row2.getKey());
+		      System.out.flush();
 		      slice = row2.getColumnSlice();
-		     
+		      
 		      for (HColumn<String, String> column : slice.getColumns()) {
 		        
 		    	  	String Name=column.getName();
@@ -89,7 +99,7 @@ public class ArticleConnector {
       		 		Article.setslug(Value);
          		 	if (Name.compareTo("pubDate")==0){
          		 		
-         		 		byte[] bDate=column.getValueBytes();
+         		 		byte[] bDate=se.toBytes(Value);
          		 	    long lDate=Convertors.byteArrayToLong(bDate);
          		 		Article.setpubDate(new Date(lDate));
          		 	}
@@ -154,11 +164,11 @@ public class ArticleConnector {
 		}
 		
 		try{
-			KeyspaceOperator ko = HFactory.createKeyspaceOperator("BloggyAppy", c);  //V2
+			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
 			StringSerializer se = StringSerializer.get();
 			LongSerializer le = LongSerializer.get();
 			UUIDSerializer ue = UUIDSerializer.get();
-			Mutator m = createMutator(ko,se);
+			Mutator<String> m = HFactory.createMutator(ko,se);
 			 String key = Article.gettitle();
 	         String derivedSlug= key.replace(' ', '-');
 			 
@@ -208,7 +218,7 @@ public class ArticleConnector {
 	         s.setColumnFamily("Authors");
 	         s.setKeys(authorValue,authorValue); //Set the Key
 	         s.setRange("numPosts", "numPosts", false, 1); //Set the range of columns (we want them all) 
-	         Result<OrderedRows<String,String, Long>> r2 = s.execute();
+	         QueryResult<OrderedRows<String,String, Long>> r2 = s.execute();
 	         OrderedRows<String, String, Long> rows = r2.get();
 	         ColumnSlice<String, Long> slice;
 		    

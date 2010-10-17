@@ -1,5 +1,5 @@
 package uk.ac.dundee.computing.aec.utils;
-import me.prettyprint.cassandra.model.*;
+import me.prettyprint.hector.api.*;
 import org.apache.cassandra.thrift.ConsistencyLevel;
 
 public final class MyConsistancyLevel implements ConsistencyLevelPolicy {
@@ -7,7 +7,7 @@ public final class MyConsistancyLevel implements ConsistencyLevelPolicy {
 	@Override
 	  public  ConsistencyLevel get(OperationType op) {
 		switch (op){
-		case READ:return ConsistencyLevel.QUORUM;
+		case READ:return ConsistencyLevel.ONE;
 		case WRITE: return ConsistencyLevel.ONE;
 		default: return ConsistencyLevel.QUORUM; //Just in Case
 				

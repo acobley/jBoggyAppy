@@ -5,26 +5,30 @@ import uk.ac.dundee.computing.aec.utils.MyConsistancyLevel;
 import java.util.Iterator;
 import java.util.Set;
 
-import me.prettyprint.cassandra.model.ConsistencyLevelPolicy;
-import me.prettyprint.cassandra.model.HFactory;
-import me.prettyprint.cassandra.model.KeyspaceOperator;
-import me.prettyprint.cassandra.service.Cluster;
+import me.prettyprint.hector.api.ConsistencyLevelPolicy;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.*;
+//import me.prettyprint.cassandra.service.Cluster;
+import me.prettyprint.cassandra.service.*;
 import me.prettyprint.cassandra.service.CassandraClient;
 
 public  final class CassandraHosts {
-	static Cluster c;
-	
+	static Cluster c=null;
+	static String Host ="134.36.36.208";
 	public CassandraHosts(){
 		
 	}
 	
 	public static String getHost(){
-		return ("134.36.36.150");
+		return (Host);
 	}
 	
 	public static String[] getHosts(){
-			c = HFactory.getOrCreateCluster("MyCluster", "134.36.36.152:9160");
-		   System.out.println(c.describeClusterName());
+		  if (c==null){
+			  System.out.println("Creating cluster connection");
+			c = HFactory.getOrCreateCluster("MyCluster", Host+":9160");
+		  }
+			System.out.println(c.describeClusterName());
 
 		   Set <String>hosts= c.getClusterHosts(true);
 		   String sHosts[] = new String[hosts.size()];
@@ -32,13 +36,15 @@ public  final class CassandraHosts {
 		   int i=0;
 		   while (it.hasNext()) {
 		       sHosts[i]=(String)it.next();
-		       System.out.println(it.next());
+		       System.out.println(sHosts[i]);
+		       i++;
 		   }
 		   return sHosts;
 	}
 	public static Cluster getCluster(){
-		c = HFactory.getOrCreateCluster("MyCluster", "134.36.36.152:9160");
-		KeyspaceOperator ko = HFactory.createKeyspaceOperator("BloggyAppy", c);
+		System.out.println("getCluster");
+		c = HFactory.getOrCreateCluster("MyCluster", Host+":9160");
+		Keyspace ko = HFactory.createKeyspace("Keyspace1", c);
 		
 		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
 		  
