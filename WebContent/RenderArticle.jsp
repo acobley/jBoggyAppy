@@ -3,17 +3,25 @@
     <%@ page import="uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.*" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html >
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+"WebContent/WEB-INF/css/style.css"
 <title>Mr Bloggy Article</title>
 </head>
 <body>
-<%@include file="Header.jsp" %>
+<header>
 <% 
 System.out.println("In RenderArticle.jsp");
 ArticleStore Article = (ArticleStore)request.getAttribute("Article");
+%>
+<%@include file="Header.jsp" %>
+<h1>An Article by <%=Article.getauthor() %></h1>
+</header>
+<article>
+<% 
+System.out.println("In RenderArticle.jsp");
+
 if (Article==null){
  %>
 	<h1>Error no Article returned</h1>
@@ -39,6 +47,8 @@ Slug: <%=Article.getslug() %>
 	<% 
 }
 %>
+</article>
+<article>
 <form action="/jBloggyAppy/Comment" method="POST">
 
 Author:<input name="Author"></input><br/>
@@ -48,8 +58,11 @@ Body:<textarea name="Comment" rows="20" cols="80"></textarea><br/>
 <input type="hidden" name="Title" value="<%=Article.gettitle() %>"></input>
 <input type="submit"  value="Add Comment">
 </form>
+</article>
+<nav>
 <p><a href="/jBloggyAppy/Comment/<%=Article.gettitle()%>">Get Comments</a></p>
 <p><a href="/jBloggyAppy/AddArticle.jsp">Add a new Article</a></p>
 <p><a href="/jBloggyAppy/Author">Return to Authors list</a></p>
+</nav>
 </body>
 </html>
