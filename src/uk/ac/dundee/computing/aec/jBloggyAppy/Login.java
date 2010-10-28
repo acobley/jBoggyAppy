@@ -159,7 +159,7 @@ public class Login extends HttpServlet {
 		//Check to see if user is registered,  You can login but not be registered
 		AuthorConnector au = new AuthorConnector();
 		
-		au.setHost(CassandraHosts.getHost());
+		
 		RequestDispatcher rd=null;
 		AuthorStore ars=au.getAuthorFromEmail(Email);
 		if (ars.getname()== null){

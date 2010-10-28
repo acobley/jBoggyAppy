@@ -12,9 +12,26 @@ import me.prettyprint.hector.api.*;
 import me.prettyprint.cassandra.service.*;
 import me.prettyprint.cassandra.service.CassandraClient;
 
+/**********************************************************
+ * 
+ * 
+ * @author administrator
+ *
+ *Hosts are 
+ * 134.36.36.208  Seed Windows 
+ * 
+ * 134.36.36.206 Linux machine  
+ * 
+ * 134.36.36.207  Windows 
+ * 
+ * 134.36.36.205 Seed Windows, no network
+ *
+ *
+ */
+
 public  final class CassandraHosts {
 	static Cluster c=null;
-	static String Host ="134.36.36.208";
+	static String Host ="134.36.36.207";
 	public CassandraHosts(){
 		
 	}

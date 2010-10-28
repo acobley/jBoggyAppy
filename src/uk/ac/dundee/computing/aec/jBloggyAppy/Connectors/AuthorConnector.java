@@ -6,16 +6,32 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.dundee.computing.aec.utils.*;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.*;
+import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
+
+
+import java.util.Date;
+ 
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.beans.HColumn;
+ 
+//import me.prettyprint.hector.api.beans.KeyspaceOperator;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.query.RangeSlicesQuery;
+import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.beans.Row;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.serializers.LongSerializer;
+import me.prettyprint.cassandra.serializers.UUIDSerializer;
 import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.CassandraClientPool;
-import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
-import me.prettyprint.cassandra.service.Keyspace;
-import me.prettyprint.cassandra.service.PoolExhaustedException;
+//import me.prettyprint.cassandra.service.Cluster;
+import me.prettyprint.cassandra.service.*;
+import me.prettyprint.hector.api.mutation.*;
 
-import org.apache.cassandra.thrift.*;
+import uk.ac.dundee.computing.aec.utils.Convertors;
 
-import java.util.List;
-import java.util.Map;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
 public class AuthorConnector {
@@ -40,101 +56,82 @@ public class AuthorConnector {
 		List<AuthorStore> Authors= new LinkedList<AuthorStore>();
 		AuthorStore Au=new AuthorStore();
 		CassandraClient client=null;
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
-			System.out.println("Can't Connect"+et);
+			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
 		}
-		
+		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+		StringSerializer se = StringSerializer.get();
 		try{
-			Keyspace ks = client.getKeyspace("BloggyAppy");
-            //retrieve sample data
-            ColumnParent columnParent = new ColumnParent("Authors");
+			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+			ko.setConsistencyLevelPolicy(mcl);
+			//retrieve  data
+			OrderedRows<String, String, String> rows = null;
+			ColumnSlice<String, String> slice=null;
+			try{
 
-           
+				//retrieve  data
+				RangeSlicesQuery<String,String, String> s=createRangeSlicesQuery(ko,se, se, se);
+				
+				s.setColumnFamily("Authors");
+				
+				s.setKeys("", ""); //Set the Key
+				s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
+				QueryResult<OrderedRows<String,String, String>> r2 = s.execute();
+				rows = r2.get();
+			}catch(Exception et){
+				System.out.println("Cant make Query on Article connector"+et);
+				return null;
+			}
+			for (Row<String,String, String> row2 : rows) {
+		    	
+		      System.out.println("key "+row2.getKey());
+		      System.out.flush();
+		      slice = row2.getColumnSlice();
+		      Au=new AuthorStore();
+		      Au.setname(row2.getKey());
+		      
+		      for (HColumn<String, String> column : slice.getColumns()) {
+		        
+		    	  	String Name=column.getName();
+         		 	String Value=column.getValue();
 
-            /**
-             * this effect how many columns we are want to retrieve
-             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
-             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
-             */
-            SliceRange columnRange = new SliceRange();
-            columnRange.setCount(100);
-            String start="";
-            byte bStart[]=start.getBytes();
-            columnRange.setStart(bStart);
-            columnRange.setFinish(new byte[0]);
-            //effect on columns order
-            columnRange.setReversed(false);
-           //count of max retrieving keys
-            KeyRange keyRange = new KeyRange();
-            keyRange.setStart_key("");
-            keyRange.setEnd_key("");
-            SlicePredicate slicePredicate = new SlicePredicate();
-            slicePredicate.setSlice_range(columnRange);
-            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
-
-            //printing keys with columns
-            for (String key : map.keySet()) {
-                List<Column> columns = map.get(key);
-                //print key
-                Au=new AuthorStore();
-                Au.setname(key); //The key will be the name.
-                
-                System.out.println(key);
-                for (Column column : columns) {
-                    //print columns with values
-                	 //if (hm.containsKey(column.getName())){
-                		
-                		 String Name=string(column.getName());
-                		 String Value=string(column.getValue());
- 
-                		 if (Name.compareTo("Twitter")==0)
-                			 Au.settwitterName(Value);
-                		 if (Name.compareTo("Email")==0)
-                			 Au.setemailName(Value);
-                		 if (Name.compareTo("Bio")==0)
-                			 Au.setbio(Value);
-                		 if (Name.compareTo("Address")==0)
-                			 Au.setaddress(Value);
-                		 if (Name.compareTo("Tel")==0)
-                			 Au.settel(Value);
-                		 
-                		 if (Name.compareTo("numPosts")==0){
-                			 byte[] bValue=column.getValue();
-                			 long lValue=0;
-                			 System.out.println("Byte Length "+bValue.length);
-                			 if (bValue.length==8){// Protect against bad data
-                				lValue =byteArrayToLong(column.getValue());
-                				 System.out.println("Author Connnector getAuthor numPosts"+lValue);
-                			 }
-                			 Au.setnumPosts(lValue);
-                		 }
-                		 
-                		 System.out.flush();
-         				
-         				//}
-                	 
-                	 	System.out.println("\t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
-                }
-                Authors.add(Au);
-            }
-
-            // This line makes sure that even if the client had failures and recovered, a correct
-            // releaseClient is called, on the up to date client.
-            client = ks.getClient();
+         		 	if (Name.compareTo("Twitter")==0)
+           			 Au.settwitterName(Value);
+           		 if (Name.compareTo("Email")==0)
+           			 Au.setemailName(Value);
+           		 if (Name.compareTo("Bio")==0)
+           			 Au.setbio(Value);
+           		 if (Name.compareTo("Address")==0)
+           			 Au.setaddress(Value);
+           		 if (Name.compareTo("Tel")==0)
+           			 Au.settel(Value);
+           		 if (Name.compareTo("numPosts")==0){
+        			 byte[] bValue=se.toBytes(Value);
+        			 long lValue=0;
+        			 System.out.println("Byte Length "+bValue.length);
+        			 if (bValue.length==8){// Protect against bad data
+        				lValue =byteArrayToLong(bValue);
+        				 System.out.println("Author Connnector getAuthor numPosts"+lValue);
+        			 }
+        			 Au.setnumPosts(lValue);
+        		 }	
+	        
+		      }
+		      Authors.add(Au);
+		      
+		    }
 
 		}catch (Exception et){
 			System.out.println("Can't get Authors "+et);
 			return null;
 		}finally{
-			try{
-				pool.releaseClient(client);
-			}catch(Exception et){
-				System.out.println("Pool acn't be released");
-				return null;
-			}
+		
 		}
 		return Authors;
 	}
@@ -142,93 +139,83 @@ public class AuthorConnector {
 	
 	public AuthorStore getAuthor(String Author) 
 	{
-		System.out.println("Author conector getAuthor "+Author);
+		
 		AuthorStore Au=new AuthorStore();
 		CassandraClient client=null;
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
-			System.out.println("Can't Connect"+et);
+			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
 		}
-		
+		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+		StringSerializer se = StringSerializer.get();
 		try{
-			Keyspace ks = client.getKeyspace("BloggyAppy");
-            //retrieve sample data
-            ColumnParent columnParent = new ColumnParent("Authors");
+			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+			ko.setConsistencyLevelPolicy(mcl);
+			//retrieve  data
+			OrderedRows<String, String, String> rows = null;
+			ColumnSlice<String, String> slice=null;
+			try{
 
-            /**
-             * this effect how many columns we are want to retrieve
-             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
-             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
-             */
-            SliceRange columnRange = new SliceRange();
-            columnRange.setCount(100);
-            String start="";
-            byte bStart[]=start.getBytes();
-            columnRange.setStart(bStart);
-            columnRange.setFinish(new byte[0]);
-            //effect on columns order
-            columnRange.setReversed(false);
-           //count of max retrieving keys
-            KeyRange keyRange = new KeyRange(1);
-            keyRange.setStart_key(Author);
-            keyRange.setEnd_key(Author);
-            SlicePredicate slicePredicate = new SlicePredicate();
-            slicePredicate.setSlice_range(columnRange);
-            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
-            
-            //printing keys with columns
-            for (String key : map.keySet()) {
-                List<Column> columns = map.get(key);
-                //print key
-                
-                Au.setname(key); //The key will be the name.
-                
-                System.out.println(key);
-                for (Column column : columns) {
-                    //print columns with values
-                	 //if (hm.containsKey(column.getName())){
-                		
-                		 String Name=string(column.getName());
-                		 String Value=string(column.getValue());
- 
-                		 if (Name.compareTo("Twitter")==0)
-                			 Au.settwitterName(Value);
-                		 if (Name.compareTo("Email")==0)
-                			 Au.setemailName(Value);
-                		 if (Name.compareTo("Bio")==0)
-                			 Au.setbio(Value);
-                		 if (Name.compareTo("Address")==0)
-                			 Au.setaddress(Value);
-                		 if (Name.compareTo("Tel")==0)
-                			 Au.settel(Value);
-                		 if (Name.compareTo("numPosts")==0){
-                			 long lValue=byteArrayToLong(column.getValue());
-                			 System.out.println("Author Connnector getAuthor "+lValue);
-                			 Au.setnumPosts(lValue);
-                		 }
- 
-                	 
-                	 	System.out.println("Author Connnector getAuthor \t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
-                }
-               
-            }
+				//retrieve  data
+				RangeSlicesQuery<String,String, String> s=createRangeSlicesQuery(ko,se, se, se);
+				
+				s.setColumnFamily("Authors");
+				
+				s.setKeys(Author, Author); //Set the Key
+				s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
+				QueryResult<OrderedRows<String,String, String>> r2 = s.execute();
+				rows = r2.get();
+			}catch(Exception et){
+				System.out.println("Cant make Query on Article connector"+et);
+				return null;
+			}
+			for (Row<String,String, String> row2 : rows) {
+		    	
+		      System.out.println("key "+row2.getKey());
+		      System.out.flush();
+		      slice = row2.getColumnSlice();
+		      Au=new AuthorStore();
+		      Au.setname(row2.getKey());
+		      
+		      for (HColumn<String, String> column : slice.getColumns()) {
+		        
+		    	  	String Name=column.getName();
+         		 	String Value=column.getValue();
 
-            // This line makes sure that even if the client had failures and recovered, a correct
-            // releaseClient is called, on the up to date client.
-            client = ks.getClient();
+         		 	if (Name.compareTo("Twitter")==0)
+           			 Au.settwitterName(Value);
+           		 if (Name.compareTo("Email")==0)
+           			 Au.setemailName(Value);
+           		 if (Name.compareTo("Bio")==0)
+           			 Au.setbio(Value);
+           		 if (Name.compareTo("Address")==0)
+           			 Au.setaddress(Value);
+           		 if (Name.compareTo("Tel")==0)
+           			 Au.settel(Value);
+           		 if (Name.compareTo("numPosts")==0){
+        			 byte[] bValue=se.toBytes(Value);
+        			 long lValue=0;
+        			 System.out.println("Byte Length "+bValue.length);
+        			 if (bValue.length==8){// Protect against bad data
+        				lValue =byteArrayToLong(bValue);
+        				 System.out.println("Author Connnector getAuthor numPosts"+lValue);
+        			 }
+        			 Au.setnumPosts(lValue);
+        		 }	
+	        
+		      }
+		    }
 
 		}catch (Exception et){
 			System.out.println("Can't get Authors "+et);
 			return null;
 		}finally{
-			try{
-				pool.releaseClient(client);
-			}catch(Exception et){
-				System.out.println("Pool acn't be released");
-				return null;
-			}
+		
 		}
 		return Au;
 	}
@@ -247,72 +234,83 @@ public class AuthorConnector {
 			return false;
 		}
 		System.out.println("Author conector addAuthor "+Author);
-		
-		CassandraClient client=null;
+	
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
-			System.out.println("Can't Connect"+et);
+			System.out.println("get Articles Posts Can't Connect"+et);
 			return false;
 		}
+		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+		StringSerializer se = StringSerializer.get();
 		
 		try{
-			 Keyspace ks = client.getKeyspace("BloggyAppy");
-			 ColumnPath columnPath = new ColumnPath("Authors");
-			 ColumnPath emailColumnPath = new ColumnPath("RegisteredOpenIdEmails");
+			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+			
+			LongSerializer le = LongSerializer.get();
+			UUIDSerializer ue = UUIDSerializer.get();
+			Mutator<String> m = HFactory.createMutator(ko,se);
+
+			 //ColumnPath emailColumnPath = new ColumnPath("RegisteredOpenIdEmails");
 			 String key = Author.getname();
              String columnName = "Email";
              String value = Author.getemailName();
-             columnPath.setColumn(columnName.getBytes());
-             ks.insert(key, columnPath, value.getBytes());
+             m.insert(key, "Authors",
+         		    HFactory.createStringColumn(columnName, value));
+
              if (Author.gettel()!=null){
             	 columnName = "Tel";
             	 value = Author.gettel(); 
-            	 columnPath.setColumn(columnName.getBytes());
-            	 ks.insert(key, columnPath, value.getBytes());
+            	 m.insert(key, "Authors",
+              		    HFactory.createStringColumn(columnName, value));
              }
              if (Author.getaddress()!=null){
             	 columnName = "Address";
             	 value = Author.getaddress(); 
-            	 columnPath.setColumn(columnName.getBytes());
-            	 ks.insert(key, columnPath, value.getBytes());
+            	 m.insert(key, "Authors",
+              		    HFactory.createStringColumn(columnName, value));
              }
              if (Author.gettwitterName()!=null){
             	 columnName = "Twitter";
             	 value = Author.gettwitterName(); 
-            	 columnPath.setColumn(columnName.getBytes());
-            	 ks.insert(key, columnPath, value.getBytes());
+            	 m.insert(key, "Authors",
+              		    HFactory.createStringColumn(columnName, value));
              }
              if (Author.getbio()!=null){
             	 columnName = "Bio";
             	 value = Author.getbio(); 
-            	 columnPath.setColumn(columnName.getBytes());
-            	 ks.insert(key, columnPath, value.getBytes());
+            	 m.insert(key, "Authors",
+              		    HFactory.createStringColumn(columnName, value));
              }
              // And set the number of posts to 0
              columnName = "numPosts";
         	 long lValue = 0;
+        	 
         	 byte[] bValue=longToByteArray(lValue);
-        	 columnPath.setColumn(columnName.getBytes());
-        	 ks.insert(key, columnPath, bValue);
+        	 //columnPath.setColumn(columnName.getBytes());
+        	 //ks.insert(key, columnPath, bValue);
+        	 value=se.fromBytes(bValue);
+        	 m.insert(key, "Authors",
+          		    HFactory.createStringColumn(columnName, value));
         	 
         	 //Now add the email and name to the RegisteredOpenIdEmails index column family
         	 value=Author.getname();
         	 columnName="RegisteredAuthor";
-             emailColumnPath.setColumn(columnName.getBytes());
+             //emailColumnPath.setColumn(columnName.getBytes());
              key=Author.getemailName();
-             ks.insert(key, emailColumnPath, value.getBytes());
+             //ks.insert(key, emailColumnPath, value.getBytes());
+             m.insert(key, "RegisteredOpenIdEmails",
+           		    HFactory.createStringColumn(columnName, value));
+             
              
 		}catch (Exception et){
 			System.out.println("Can't Create a new Author "+et);
 			return false;
 		}finally{
-			try{
-				pool.releaseClient(client);
-			}catch(Exception et){
-				System.out.println("Pool acn't be released");
-				return false;
-			}
+			
 		}
 		return true;
 	}
@@ -320,100 +318,72 @@ public class AuthorConnector {
 	public AuthorStore getAuthorFromEmail(String Email){
 		System.out.println("Author conector getAuthorfromEmail "+Email);
 		AuthorStore Au=new AuthorStore();
-		CassandraClient client=null;
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
-			System.out.println("Can't Connect"+et);
+			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
 		}
+		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+		StringSerializer se = StringSerializer.get();
 		
 		try{
-			Keyspace ks = client.getKeyspace("BloggyAppy");
-            //retrieve sample data
-            ColumnParent columnParent = new ColumnParent("RegisteredOpenIdEmails");
+			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+         
+			//retrieve  data
+			OrderedRows<String, String, String> rows = null;
+			ColumnSlice<String, String> slice=null;
+			try{
 
-            /**
-             * this effect how many columns we are want to retrieve
-             * also check slicePredicate.setColumn_names(java.util.List<byte[]> column_names)
-             * .setColumn_names(new ArrayList<byte[]>()); no columns retrievied at all
-             */
-            SliceRange columnRange = new SliceRange();
-            columnRange.setCount(2);
-            String start="";
-            byte bStart[]=start.getBytes();
-            columnRange.setStart(bStart);
-            columnRange.setFinish(new byte[0]);
-            //effect on columns order
-            columnRange.setReversed(false);
-           //count of max retrieving keys
-            KeyRange keyRange = new KeyRange(1);
-            keyRange.setStart_key(Email);
-            keyRange.setEnd_key(Email);
-            SlicePredicate slicePredicate = new SlicePredicate();
-            slicePredicate.setSlice_range(columnRange);
-            Map<String, List<Column>> map = ks.getRangeSlices(columnParent, slicePredicate, keyRange);
+				//retrieve  data
+				RangeSlicesQuery<String,String, String> s=createRangeSlicesQuery(ko,se, se, se);
+				
+				s.setColumnFamily("RegisteredOpenIdEmails");
+				
+				s.setKeys(Email,Email); //Set the Key
+				s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
+				QueryResult<OrderedRows<String,String, String>> r2 = s.execute();
+				rows = r2.get();
+			}catch(Exception et){
+				System.out.println("Cant make Query on Article connector"+et);
+				return null;
+			}
+			for (Row<String,String, String> row2 : rows) {
+		    	
+		      System.out.println("key "+row2.getKey());
+		      System.out.flush();
+		      slice = row2.getColumnSlice();
+		      Au=new AuthorStore();
+		      Au.setname(row2.getKey());
+		      
+		      for (HColumn<String, String> column : slice.getColumns()) {
+		        
+		    	  String Name=column.getName();
+         		 String Value=column.getValue();
+
+         		 if (Name.compareTo("RegisteredAuthor")==0)
+         			 Au.setname(Value);
+	        
+		      }
+		    }
+			
+			
+			
             
-            //printing keys with columns
-            for (String key : map.keySet()) {
-                List<Column> columns = map.get(key);
-                //print key
-                
-                Au.setemailName(key); //The key will be the emailname.
-                
-                System.out.println(key);
-                for (Column column : columns) {
-                    //print columns with values
-                	 //if (hm.containsKey(column.getName())){
-                		
-                		 String Name=string(column.getName());
-                		 String Value=string(column.getValue());
- 
-                		 if (Name.compareTo("RegisteredAuthor")==0)
-                			 Au.setname(Value);
-                		 
-                	 
-                	 	System.out.println("Author Connnector getAuthor \t" + string(column.getName()) + "\t ==\t" + string(column.getValue()));
-                }
-               
-            }
-
-            // This line makes sure that even if the client had failures and recovered, a correct
-            // releaseClient is called, on the up to date client.
-            client = ks.getClient();
 
 		}catch (Exception et){
 			System.out.println("Can't get Authors "+et);
 			return null;
 		}finally{
-			try{
-				pool.releaseClient(client);
-			}catch(Exception et){
-				System.out.println("Pool can't be released");
-				return null;
-			}
+			
 		}
 		return Au;
 	}
 	
-	public void setHost(String Host){
-	  this.Host=Host;	
-	}
 	
-	//This Connects to a named host.  A servlet can use this to load balance
-	private CassandraClient Connect(String Host) throws IllegalStateException, PoolExhaustedException, Exception{
-		
-        CassandraClient client = pool.borrowClient(Host, 9160);
-        return client;
-	}
-	
-	//This just connects to the stored host.  This can be used so that
-	//an instance of Authorconnector always goes to the same host
-	private CassandraClient Connect() throws IllegalStateException, PoolExhaustedException, Exception{
-		
-        CassandraClient client = pool.borrowClient(this.Host, 9160);
-        return client;
-	}
 	
 	//From: http://www.captain.at/howto-java-convert-binary-data.php
 	public static long arr2long (byte[] arr, int start) {

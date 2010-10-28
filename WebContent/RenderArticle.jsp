@@ -1,21 +1,20 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
-    <%@ page import="uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*" %>
+<%@ page import="uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.*" %>
 <!DOCTYPE html >
 <html lang="en">
 <head>
-"WebContent/WEB-INF/css/style.css"
+<link rel="stylesheet" type="text/css" href="WebContent/WEB-INF/css/style.css"/>
+
 <title>Mr Bloggy Article</title>
 </head>
 <body>
 <header>
+<%@include file="Header.jsp" %>
 <% 
 System.out.println("In RenderArticle.jsp");
 ArticleStore Article = (ArticleStore)request.getAttribute("Article");
 %>
-<%@include file="Header.jsp" %>
 <h1>An Article by <%=Article.getauthor() %></h1>
 </header>
 <article>

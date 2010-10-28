@@ -103,7 +103,7 @@ public class Article extends HttpServlet {
 		
 		ArticleConnector au = new ArticleConnector();
 		//au.setHost(CassandraHosts.getHost());
-		
+		 
 		
 		if (au.AddArticle(Article)== true){
 			ReturnArticle(request,response,0,Article.gettitle());  //Return as Jsp only

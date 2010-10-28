@@ -143,17 +143,7 @@ public class ArticleConnector {
 		}
 		System.out.println("Article conector addArticle "+Article);
 		
-		/* V1
-		CassandraClient client=null;
-		try{
-			client=Connect();
-		}catch (Exception et){
-			System.out.println("Can't Connect"+et);
-			return false;
-		}
-		*/
 		
-
 		Cluster c; //V2
 		try{
 			

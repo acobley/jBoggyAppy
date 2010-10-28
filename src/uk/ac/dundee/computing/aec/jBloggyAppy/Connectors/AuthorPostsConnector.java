@@ -1,26 +1,32 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
-import static me.prettyprint.cassandra.model.HFactory.createRangeSlicesQuery;
+
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.*;
+import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import me.prettyprint.cassandra.model.ColumnSlice;
-import me.prettyprint.cassandra.model.HColumn;
-import me.prettyprint.cassandra.model.HFactory;
-import me.prettyprint.cassandra.model.KeyspaceOperator;
-import me.prettyprint.cassandra.model.OrderedRows;
-import me.prettyprint.cassandra.model.RangeSlicesQuery;
-import me.prettyprint.cassandra.model.Result;
-import me.prettyprint.cassandra.model.Row;
+
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.beans.HColumn;
+ 
+//import me.prettyprint.hector.api.beans.KeyspaceOperator;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.query.RangeSlicesQuery;
+import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.serializers.UUIDSerializer;
+
 import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.Cluster;
+//import me.prettyprint.cassandra.service.Cluster;
 
 
 
-import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
+
+
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
+import uk.ac.dundee.computing.aec.utils.MyConsistancyLevel;
 public class AuthorPostsConnector {
 	
 	
@@ -39,6 +45,7 @@ public class AuthorPostsConnector {
 		try{
 			
 			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
 			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
@@ -47,14 +54,16 @@ public class AuthorPostsConnector {
 		
 		//For V2 API
 		StringSerializer se = StringSerializer.get();
-		UUIDSerializer ue = UUIDSerializer.get();
+		
 		try{
 			
             //retrieve sample data
-			KeyspaceOperator ko=null;
+			Keyspace ko=null;
 			try {
-				ko = HFactory.createKeyspaceOperator("BloggyAppy", c);  //V2
+				ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+				ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
 				
+				ko.setConsistencyLevelPolicy(mcl);
 			}catch(Exception et){
 				System.out.println("AuthorPosts KeyspaceOperator");
 				return null;
@@ -73,7 +82,7 @@ public class AuthorPostsConnector {
 				System.out.println("AuthorPosts RangeSlice Query"+et);
 				return null;
 			}
-			Result<OrderedRows<String,String, String>> r2=null;
+			QueryResult<OrderedRows<String,String, String>> r2=null;
 			OrderedRows<String, String, String> rows=null;
 			try{
 				 if (s!=null){
@@ -144,21 +153,7 @@ public class AuthorPostsConnector {
 	}
 	
 	
-	//This Connects to a named host.  
-@Deprecated
-	private CassandraClient Connect(String Host) throws IllegalStateException, Exception{
-		return CassandraHosts.getClient();
-        
-	}
 	
-	
-	private CassandraClient Connect() throws IllegalStateException, Exception{
-		
-		
-        return CassandraHosts.getClient();
-       
-	}
-	  
 
 
 }
