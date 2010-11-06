@@ -1,43 +1,35 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
-import static me.prettyprint.cassandra.utils.StringUtils.string;
+
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import uk.ac.dundee.computing.aec.utils.*;
-import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.*;
+
 import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
 
-
-import java.util.Date;
- 
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.*;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
- 
-//import me.prettyprint.hector.api.beans.KeyspaceOperator;
+
 import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.serializers.LongSerializer;
-import me.prettyprint.cassandra.serializers.UUIDSerializer;
-import me.prettyprint.cassandra.service.CassandraClient;
-//import me.prettyprint.cassandra.service.Cluster;
+
 import me.prettyprint.cassandra.service.*;
 import me.prettyprint.hector.api.mutation.*;
 
-import uk.ac.dundee.computing.aec.utils.Convertors;
 
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
 public class AuthorConnector {
 	
 	String Host=null;
-	private HashMap hm = new HashMap(); //We'll use this to make sure we only get fields we expect from the DB
+	private HashMap<String,String> hm = new HashMap<String, String>(); //We'll use this to make sure we only get fields we expect from the DB
 	CassandraClientPool pool;
 	public AuthorConnector(){
 		//We use a hashmap to define the fields we are expecting
@@ -115,7 +107,7 @@ public class AuthorConnector {
         			 long lValue=0;
         			 System.out.println("Byte Length "+bValue.length);
         			 if (bValue.length==8){// Protect against bad data
-        				lValue =byteArrayToLong(bValue);
+        				lValue =Convertors.byteArrayToLong(bValue);
         				 System.out.println("Author Connnector getAuthor numPosts"+lValue);
         			 }
         			 Au.setnumPosts(lValue);
@@ -140,7 +132,7 @@ public class AuthorConnector {
 	{
 		
 		AuthorStore Au=new AuthorStore();
-		CassandraClient client=null;
+
 		Cluster c; //V2
 		try{
 			
@@ -201,7 +193,7 @@ public class AuthorConnector {
         			 long lValue=0;
         			 System.out.println("Byte Length "+bValue.length);
         			 if (bValue.length==8){// Protect against bad data
-        				lValue =byteArrayToLong(bValue);
+        				lValue =Convertors.byteArrayToLong(bValue);
         				 System.out.println("Author Connnector getAuthor numPosts"+lValue);
         			 }
         			 Au.setnumPosts(lValue);
@@ -249,8 +241,7 @@ public class AuthorConnector {
 		try{
 			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
 			ko.setConsistencyLevelPolicy(mcl);
-			LongSerializer le = LongSerializer.get();
-			UUIDSerializer ue = UUIDSerializer.get();
+
 			Mutator<String> m = HFactory.createMutator(ko,se);
 
 			 //ColumnPath emailColumnPath = new ColumnPath("RegisteredOpenIdEmails");
@@ -288,7 +279,7 @@ public class AuthorConnector {
              columnName = "numPosts";
         	 long lValue = 0;
         	 
-        	 byte[] bValue=longToByteArray(lValue);
+        	 byte[] bValue=Convertors.longToByteArray(lValue);
         	 //columnPath.setColumn(columnName.getBytes());
         	 //ks.insert(key, columnPath, bValue);
         	 value=se.fromBytes(bValue);
@@ -368,10 +359,6 @@ public class AuthorConnector {
 	        
 		      }
 		    }
-			
-			
-			
-            
 
 		}catch (Exception et){
 			System.out.println("Can't get Authors "+et);
@@ -381,51 +368,5 @@ public class AuthorConnector {
 		}
 		return Au;
 	}
-	
-	
-	
-	//From: http://www.captain.at/howto-java-convert-binary-data.php
-	public static long arr2long (byte[] arr, int start) {
-		int i = 0;
-		int len = 4;
-		int cnt = 0;
-		byte[] tmp = new byte[len];
-		for (i = start; i < (start + len); i++) {
-			tmp[cnt] = arr[i];
-			cnt++;
-		}
-		long accum = 0;
-		i = 0;
-		for ( int shiftBy = 0; shiftBy < 32; shiftBy += 8 ) {
-			accum |= ( (long)( tmp[i] & 0xff ) ) << shiftBy;
-			i++;
-		}
-		return accum;
-	}
-	
-	  private  byte[] longToByteArray(long value)
-	    {
-		 byte[] buffer = new byte[8]; //longs are 8 bytes I believe
-		 for (int i = 7; i >= 0; i--) { //fill from the right
-			 buffer[i]= (byte)(value & 0x00000000000000ff); //get the bottom byte
-			 
-			 //System.out.print(""+Integer.toHexString((int)buffer[i])+",");
-	        value=value >>> 8; //Shift the value right 8 bits
-	    }
-	    return buffer;
-	    }
-	  
-	  private long byteArrayToLong(byte[] buffer){
-		  long value=0;
-		  long multiplier=1;
-		  for (int i = 7; i >= 0; i--) { //get from the right
-			 
-			  //System.out.println(Long.toHexString(multiplier)+"\t"+Integer.toHexString((int)buffer[i]));
-			  value=value+(buffer[i] & 0xff)*multiplier; // add the value * the hex mulitplier
-			  multiplier=multiplier <<8;
-		  }
-		  return value;
-	 }
-	
 
 }
