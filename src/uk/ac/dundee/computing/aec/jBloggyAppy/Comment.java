@@ -88,7 +88,7 @@ public class Comment extends HttpServlet {
 		Comment.setbody(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Comment")));
 		String title=(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Title")));
 		CommentConnector au = new CommentConnector();
-		au.setHost(CassandraHosts.getHost());
+
 		
 		RequestDispatcher rd;
 		if (au.AddComment(title,Comment)== true){
@@ -121,7 +121,7 @@ public class Comment extends HttpServlet {
 		 * 
 		 */
 		CommentConnector commtc = new CommentConnector();
-		commtc.setHost(CassandraHosts.getHost());
+
 		System.out.println("Return All comments for"+Title);
 		List<CommentStore> Comments = commtc.getComments(Title);
 		switch(Format){

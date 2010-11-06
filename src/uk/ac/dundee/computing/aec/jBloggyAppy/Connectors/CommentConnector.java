@@ -1,51 +1,136 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
 
-import static me.prettyprint.cassandra.utils.StringUtils.bytes;
 import static me.prettyprint.cassandra.utils.StringUtils.string;
+import static uk.ac.dundee.computing.aec.utils.Convertors.*;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
 
+import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.Arrays;
 
-import org.apache.cassandra.thrift.Column;
-import org.apache.cassandra.thrift.ColumnParent;
-import org.apache.cassandra.thrift.ColumnPath;
-import org.apache.cassandra.thrift.KeyRange;
-import org.apache.cassandra.thrift.SlicePredicate;
-import org.apache.cassandra.thrift.SliceRange;
-import org.apache.cassandra.thrift.SuperColumn;
+import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
+import static me.prettyprint.hector.api.factory.HFactory.createRangeSuperSlicesQuery;
+import static me.prettyprint.hector.api.factory.HFactory.createSliceQuery;
+import static me.prettyprint.hector.api.factory.HFactory.createSuperColumn;
+import static me.prettyprint.hector.api.factory.HFactory.createMutator;
 
-import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.CommentStore;
+
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.*;
+
+import me.prettyprint.hector.api.mutation.MutationResult;
+import me.prettyprint.hector.api.mutation.Mutator;
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.beans.HColumn;
+import me.prettyprint.hector.api.beans.HSuperColumn;
+import me.prettyprint.hector.api.beans.OrderedSuperRows;
+import me.prettyprint.hector.api.beans.SuperRow;
+import me.prettyprint.hector.api.beans.SuperSlice;
+ 
+//import me.prettyprint.hector.api.beans.KeyspaceOperator;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.query.RangeSlicesQuery;
+import me.prettyprint.hector.api.query.RangeSuperSlicesQuery;
+import me.prettyprint.hector.api.query.SliceQuery;
+import me.prettyprint.hector.api.query.QueryResult;
+import me.prettyprint.hector.api.beans.Row;
+import me.prettyprint.cassandra.serializers.LongSerializer;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.serializers.UUIDSerializer;
+
 import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.CassandraClientPool;
-import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
-import me.prettyprint.cassandra.service.Keyspace;
-import me.prettyprint.cassandra.service.PoolExhaustedException;
+
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
+import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.TagStore;
+import uk.ac.dundee.computing.aec.utils.MyConsistancyLevel;
 
 public class CommentConnector {
 
 	
-	String Host=null;
-	CassandraClientPool pool;
-	
 	public CommentConnector(){
-		pool = CassandraClientPoolFactory.INSTANCE.get();
+	
 		
 	}
-	
+
 	public List<CommentStore> getComments(String articleTitle){
 		List <CommentStore> Comments =  new LinkedList<CommentStore>();
 		CommentStore co=null;
-		CassandraClient client=null;
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
-			System.out.println("get comments Can't Connect"+et);
+			System.out.println("get Tag Posts Can't Connect"+et);
 			return null;
 		}
+	
+		
+		//For V2 API
+		StringSerializer se = StringSerializer.get();
+		UUIDSerializer ue=UUIDSerializer.get();
+		try{
+			Keyspace ko=null;
+			try {
+				ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+				ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+				ko.setConsistencyLevelPolicy(mcl);
+			}catch(Exception et){
+				System.out.println("Comments KeyspaceOperator");
+				return null;
+			}
+			System.out.println("Comments for article"+articleTitle);
+			RangeSuperSlicesQuery<String, UUID,String, String> q = createRangeSuperSlicesQuery(ko, se, ue, se, se);
+			q.setKeys(articleTitle, articleTitle);
+			q.setColumnFamily("Comments");
+			q.setRange(null, null, false, 100); // up to 100 comments
+			QueryResult<OrderedSuperRows<String, UUID, String, String>> r = q.execute();
+		    OrderedSuperRows<String, UUID, String, String> rows = r.get();
+			System.out.println(rows.getCount()); //How many super rows ?
+			SuperSlice<UUID, String, String> slice ;
+			for (SuperRow<String, UUID, String, String> row2 : rows) {//This is stepping through the keys returned (but there should be only one)
+			      slice = row2.getSuperSlice(); //These are the UUIDs coming out
+			      for (HSuperColumn<UUID, String, String> column : slice.getSuperColumns()) {
+			        System.out.println("Column "+column.getName());
+			        List<HColumn<String,String>> columns =column.getColumns();
+			        Iterator<HColumn<String,String>> it= columns.iterator();
+			        co=new CommentStore();
+			        while (it.hasNext()){ //Now we'll step through the returned columns
+			        	HColumn<String,String> col=it.next();
+			        	System.out.println("Column "+col.getName()+" : "+col.getValue());
+			        	String colName=col.getName();
+               		 	String colValue=col.getValue();
+     	                if (colName.compareTo("Author")==0)
+               		 		co.setauthor(colValue);
+               		 	if (colName.compareTo("Comment")==0)
+            		 		co.setbody(colValue);
+
+               		 	if (colName.compareTo("pubDate")==0){
+               		 		//Well deal with the date soon, its a string in the dB now
+               		 		/*
+               		 		byte[] bDate=col.getValue();
+               		 	    long lDate=byteArrayToLong(bDate);
+               		 	    */
+               		 		co.setpubDate(new Date());
+               		 		
+               		 	}
+			        }
+			        Comments.add(co);
+			     }
+			 }
+
+		    
+		}catch (Exception et){
+			System.out.println("General exception reading comments "+et);
+		}
+		/*
+		
 		System.out.println("Comments for article"+articleTitle);
 		try{
 			Keyspace ks = client.getKeyspace("BloggyAppy");
@@ -63,9 +148,7 @@ public class CommentConnector {
 	            List<Column> cols;
 	            Iterator<Column> itr; 
 
-	            
-	            /*****************************************/
-	        	System.out.println("  Get SuperColumns /*****************************************/");
+	        	System.out.println("Get SuperColumns ***********************");
 	            
 	        	 columnRange.setStart(new byte[0]);  //We'll get t all.
 		         columnRange.setFinish(new byte[0]); //Sets the last column name to get
@@ -143,7 +226,7 @@ public class CommentConnector {
 				return null;
 			}
 		}
-		
+	*/	
 		
 		return Comments;
 	}
@@ -158,41 +241,66 @@ public boolean AddComment(String title,CommentStore Comment){
 			return false;
 		}
 		if (Comment.getbody()==null){
-			//Same with Email, all other fields are optional
+			//Same with body, all other fields are optional
 			return false;
 		}
 		System.out.println("Comment Connector add comment to "+title);
-		
-		CassandraClient client=null;
+
+		Cluster c; //V2
 		try{
-			client=Connect();
+			
+			c=CassandraHosts.getCluster();
+			CassandraHosts.getHosts();
 		}catch (Exception et){
-			System.out.println("Can't Connect"+et);
+			System.out.println("get Tag Posts Can't Connect"+et);
 			return false;
 		}
+	
 		
+		//For V2 API
+		StringSerializer se = StringSerializer.get();
+		UUIDSerializer ue=UUIDSerializer.get();
 		try{
-			 Keyspace ks = client.getKeyspace("BloggyAppy");
-			
-			 	java.util.UUID timeUUID=getTimeUUID();
-	            ColumnPath cp = new ColumnPath("Comments");
-	            cp.setSuper_column(asByteArray(timeUUID));
-	            cp.setColumn(bytes("Author"));
-	            ks.insert(title, cp, bytes(Comment.getauthor()));
-	            cp.setColumn(bytes("Comment"));
-	            ks.insert(title, cp, bytes(Comment.getbody()));
-	            
-	            long now = System.currentTimeMillis();
-	             Long lnow=new Long(now);
-	             cp.setColumn(bytes("pubDate"));
-		         ks.insert(title, cp, longToByteArray(now));
-             
+			Keyspace ko=null;
+			try {
+				ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+				ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+				ko.setConsistencyLevelPolicy(mcl);
+			}catch(Exception et){
+				System.out.println("Comments KeyspaceOperator");
+				return false;
+			}
+			//Create a mutator
+			 Mutator<String> m = createMutator(ko, se);
+			 String ColumnFamily="Comments";
+			 //now lets create the comments for this super column
+			 HColumn<String,String> c1= HFactory.createStringColumn("Author", Comment.getauthor());
+			 HColumn<String,String> c2= HFactory.createStringColumn("Comment", Comment.getbody());
+			 long now = System.currentTimeMillis();
+			 String sNow=DateFormat.getInstance().format(now);
+			 System.out.println("CommentDate "+sNow);
+			 // Note the pubdate is a formated string for now
+			 HColumn<String,String> c3= HFactory.createColumn("pubDate", sNow,se,se);
+			 // We need a list of these
+			 List<HColumn<String,String>> ColumnList =new  ArrayList<HColumn<String,String>>();
+			 ColumnList.add(c1);
+			 ColumnList.add(c2);
+			 ColumnList.add(c3);
+			 //Create the supercolumn with TimeUUID as the key
+			 HSuperColumn<UUID, String, String> sc;
+			 java.util.UUID timeUUID=getTimeUUID();
+			 sc=createSuperColumn(timeUUID,ColumnList,ue,se,se);
+			 System.out.println("sc"+sc);
+			 //Add it as a supercolumn to the column family with the blog title as a key
+			 m.addInsertion(title, ColumnFamily, sc);
+			 //Don't forget to execute it !
+			 m.execute();
 		}catch (Exception et){
 			System.out.println("Can't Create a new comment "+et);
 			return false;
 		}finally{
 			try{
-				pool.releaseClient(client);
+				//pool.releaseClient(client);
 			}catch(Exception et){
 				System.out.println("Pool acn't be released");
 				return false;
@@ -201,68 +309,6 @@ public boolean AddComment(String title,CommentStore Comment){
 		return true;
 	}
 	
-	public void setHost(String Host){
-		  this.Host=Host;	
-		}
-		
-		//This Connects to a named host.  A servlet can use this to load balance
-		private CassandraClient Connect(String Host) throws IllegalStateException, PoolExhaustedException, Exception{
-			
-	        CassandraClient client = pool.borrowClient(Host, 9160);
-	        return client;
-		}
-		
-		//This just connects to the stored host.  This can be used so that
-		//an instance of Authorconnector always goes to the same host
-		private CassandraClient Connect() throws IllegalStateException, PoolExhaustedException, Exception{
-			System.out.println("Host "+this.Host);
-	        CassandraClient client = pool.borrowClient(this.Host, 9160);
-	        return client;
-		}
-		
-		 private  byte[] longToByteArray(long value)
-		    {
-			 byte[] buffer = new byte[8]; //longs are 8 bytes I believe
-			 for (int i = 7; i >= 0; i--) { //fill from the right
-				 buffer[i]= (byte)(value & 0x00000000000000ff); //get the bottom byte
-				 
-				 //System.out.print(""+Integer.toHexString((int)buffer[i])+",");
-		        value=value >>> 8; //Shift the value right 8 bits
-		    }
-		    return buffer;
-		    }
-		  
-		  private long byteArrayToLong(byte[] buffer){
-			  long value=0;
-			  long multiplier=1;
-			  for (int i = 7; i >= 0; i--) { //get from the right
-				 
-				  //System.out.println(Long.toHexString(multiplier)+"\t"+Integer.toHexString((int)buffer[i]));
-				  value=value+(buffer[i] & 0xff)*multiplier; // add the value * the hex mulitplier
-				  multiplier=multiplier <<8;
-			  }
-			  return value;
-		 }
-		  
-		  public static java.util.UUID getTimeUUID()
-		     {
-		             return java.util.UUID.fromString(new com.eaio.uuid.UUID().toString());
-		     }
-		  
-		  public static byte[] asByteArray(java.util.UUID uuid)
-		     {
-		         long msb = uuid.getMostSignificantBits();
-		         long lsb = uuid.getLeastSignificantBits();
-		         byte[] buffer = new byte[16];
 
-		         for (int i = 0; i < 8; i++) {
-		                 buffer[i] = (byte) (msb >>> 8 * (7 - i));
-		         }
-		         for (int i = 8; i < 16; i++) {
-		                 buffer[i] = (byte) (lsb >>> 8 * (7 - i));
-		         }
-
-		         return buffer;
-		     }
 		
 }

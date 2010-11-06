@@ -31,7 +31,7 @@ import me.prettyprint.cassandra.service.CassandraClient;
 
 public  final class CassandraHosts {
 	static Cluster c=null;
-	static String Host ="134.36.36.207";
+	static String Host ="134.36.36.206";
 	public CassandraHosts(){
 		
 	}

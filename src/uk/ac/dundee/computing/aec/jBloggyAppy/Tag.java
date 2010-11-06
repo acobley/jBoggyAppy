@@ -122,7 +122,7 @@ public class Tag extends HttpServlet {
 		 * 
 		 */
 		TagPostConnector aup = new TagPostConnector();
-		aup.setHost(CassandraHosts.getHost());
+		
 		System.out.println("Return All Tags for"+Tag);
 		List<PostStore> Posts = aup.getTagPosts(Tag);
 		switch(Format){
@@ -156,7 +156,7 @@ public class Tag extends HttpServlet {
 		 */
 		TagPostConnector aup = new TagPostConnector();
 	
-		aup.setHost(CassandraHosts.getHost());
+		
 		System.out.println("Return All Tags ");
 		List<TagStore> Tags = aup.getTagNames();
 		switch(Format){

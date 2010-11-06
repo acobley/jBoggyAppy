@@ -55,10 +55,9 @@ public class AuthorConnector {
 	{
 		List<AuthorStore> Authors= new LinkedList<AuthorStore>();
 		AuthorStore Au=new AuthorStore();
-		CassandraClient client=null;
+
 		Cluster c; //V2
 		try{
-			
 			c=CassandraHosts.getCluster();
 			CassandraHosts.getHosts();
 		}catch (Exception et){
