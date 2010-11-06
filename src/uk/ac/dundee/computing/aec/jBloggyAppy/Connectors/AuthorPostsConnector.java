@@ -1,25 +1,21 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
 
-import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.*;
+
 import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
 
 import java.util.LinkedList;
 import java.util.List;
 
-
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.*;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
  
-//import me.prettyprint.hector.api.beans.KeyspaceOperator;
 import me.prettyprint.hector.api.beans.OrderedRows;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.cassandra.serializers.StringSerializer;
-
-import me.prettyprint.cassandra.service.CassandraClient;
-//import me.prettyprint.cassandra.service.Cluster;
 
 
 
@@ -141,18 +137,9 @@ public class AuthorPostsConnector {
 		}finally{
 		
 		}
-/*			try{
-				pool.releaseClient(client);
-			}catch(Exception et){
-				System.out.println("Pool acn't be released");
-				return null;
-			}
-			*/
-		
+
 		return Posts;
 	}
-	
-	
 	
 
 
