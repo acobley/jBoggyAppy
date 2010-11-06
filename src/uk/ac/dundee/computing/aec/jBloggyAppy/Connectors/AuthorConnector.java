@@ -185,7 +185,7 @@ public class AuthorConnector {
 		        
 		    	  	String Name=column.getName();
          		 	String Value=column.getValue();
-
+         		 	System.out.println("NAme: "+Name+" : "+Value);
          		 	if (Name.compareTo("Twitter")==0)
            			 Au.settwitterName(Value);
            		 if (Name.compareTo("Email")==0)
@@ -248,7 +248,7 @@ public class AuthorConnector {
 		
 		try{
 			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
-			
+			ko.setConsistencyLevelPolicy(mcl);
 			LongSerializer le = LongSerializer.get();
 			UUIDSerializer ue = UUIDSerializer.get();
 			Mutator<String> m = HFactory.createMutator(ko,se);
@@ -331,7 +331,7 @@ public class AuthorConnector {
 		
 		try{
 			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
-         
+			ko.setConsistencyLevelPolicy(mcl);
 			//retrieve  data
 			OrderedRows<String, String, String> rows = null;
 			ColumnSlice<String, String> slice=null;

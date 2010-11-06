@@ -154,7 +154,9 @@ public class ArticleConnector {
 		}
 		
 		try{
+			ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
 			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
+			ko.setConsistencyLevelPolicy(mcl);
 			StringSerializer se = StringSerializer.get();
 			LongSerializer le = LongSerializer.get();
 			UUIDSerializer ue = UUIDSerializer.get();
@@ -267,27 +269,5 @@ public class ArticleConnector {
 		}
 		return true;
 	}
-	
-	
-	
-		
-		//This Connects to a named host.  
-	@Deprecated
-		private CassandraClient Connect(String Host) throws IllegalStateException, Exception{
-			return CassandraHosts.getClient();
-	        
-		}
-		
-		
-		private CassandraClient Connect() throws IllegalStateException, Exception{
-			
-			
-	        return CassandraHosts.getClient();
-	       
-		}
-	
-		
-		  
-		  
 
 }
