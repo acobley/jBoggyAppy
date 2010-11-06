@@ -1,14 +1,12 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
 
+import java.util.Date;
+
 import uk.ac.dundee.computing.aec.utils.*;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.*;
 import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Date;
- 
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
  
@@ -20,9 +18,7 @@ import me.prettyprint.hector.api.beans.Row;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.UUIDSerializer;
-import me.prettyprint.cassandra.service.CassandraClient;
-//import me.prettyprint.cassandra.service.Cluster;
-import me.prettyprint.cassandra.service.*;
+
 import me.prettyprint.hector.api.mutation.*;
 
  
