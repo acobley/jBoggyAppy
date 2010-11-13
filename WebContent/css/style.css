@@ -1,0 +1,6 @@
+@CHARSET "UTF-8";
+header, nav, footer, article {display:block;}
+nav {float:left; width:20%;}
+article {float:right; width:59%;}
+nav.Blogs {float:right; width:20%;}
+footer {clear:both;}
