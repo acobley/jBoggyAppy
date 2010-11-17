@@ -66,6 +66,7 @@ function setTitle(str){
 
 function loadAuthors()
 {
+	
 	clearNav();
 	shownavWaiting();
 	setTitle("jBloggyAppy")
@@ -76,20 +77,25 @@ function loadAuthors()
 		
 		data = data["Data"];
 		$("#nav").append("<ul></ul>");
+		
 		for(var i in data)
 		{
-			var title = data[i]["name"]
+			
+			var title = data[i]["name"];
+			                    
 			$("#nav ul").append(
 				$("<li></li>").append(
 					$("<a></a>").attr("href", title).text(title).click(function()
-						{
-							loadAuthor(title);
-							return false;
-						})
+							{
+						var thisTitle = $(this).attr("href");
+						loadAuthor(thisTitle);
+						return false;
+					})
 				)
-			)
+			);
 		}
 	}, "json");
+	
 }
 
 function loadAuthor(Author)
@@ -101,7 +107,7 @@ function loadAuthor(Author)
 	{
 		hideWaiting();
 		
-		$("#content").append("<h1>Details"+Author+"</h1>");
+		$("#content").append("<h1>Details: "+Author+"</h1>");
 		$("#content").append("<table></table>");
 		
 		var table = $("#content table");
@@ -133,8 +139,9 @@ function loadPosts(Author)
 				$("<li></li>").append(
 					$("<a></a>").attr("href", title).text(title).click(function()
 						{
-							loadArticle(title);
-							return false;
+						var thisTitle = $(this).attr("href");
+						loadArticle(thisTitle);
+						return false;
 						})
 				)
 			)
