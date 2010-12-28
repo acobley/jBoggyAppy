@@ -6,11 +6,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 import me.prettyprint.hector.api.ConsistencyLevelPolicy;
+import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.*;
 //import me.prettyprint.cassandra.service.Cluster;
 import me.prettyprint.cassandra.service.*;
-import me.prettyprint.cassandra.service.CassandraClient;
 
 /**********************************************************
  * 
@@ -31,7 +31,7 @@ import me.prettyprint.cassandra.service.CassandraClient;
 
 public  final class CassandraHosts {
 	static Cluster c=null;
-	static String Host ="134.36.36.206";
+	static String Host ="134.36.36.208";
 	public CassandraHosts(){
 		
 	}
@@ -60,8 +60,8 @@ public  final class CassandraHosts {
 	}
 	public static Cluster getCluster(){
 		System.out.println("getCluster");
-		c = HFactory.getOrCreateCluster("MyCluster", Host+":9160");
-		Keyspace ko = HFactory.createKeyspace("Keyspace1", c);
+		c = HFactory.getOrCreateCluster("HawkwindStarbase", Host+":9160");
+		Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
 		
 		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
 		  

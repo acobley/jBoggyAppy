@@ -27,10 +27,9 @@ import me.prettyprint.hector.api.mutation.*;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
 public class AuthorConnector {
-	
-	String Host=null;
+
 	private HashMap<String,String> hm = new HashMap<String, String>(); //We'll use this to make sure we only get fields we expect from the DB
-	CassandraClientPool pool;
+	
 	public AuthorConnector(){
 		//We use a hashmap to define the fields we are expecting
 		hm.put("Email","");
@@ -39,8 +38,7 @@ public class AuthorConnector {
 		hm.put("Bio", "");
 		//We don't worry about the Name, this will be the key
 		
-		pool = CassandraClientPoolFactory.INSTANCE.get();
-	
+		
 	}
 	
 	public List<AuthorStore> getAuthors() 

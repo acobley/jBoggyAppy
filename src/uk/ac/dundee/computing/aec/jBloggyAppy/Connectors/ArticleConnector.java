@@ -48,7 +48,7 @@ public class ArticleConnector {
 			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
 		}
-		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
+		
 		
 		
 		System.out.println("Posts for Article "+title);
@@ -59,7 +59,7 @@ public class ArticleConnector {
 			ColumnSlice<String, String> slice=null;
 			try{
 			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
-			ko.setConsistencyLevelPolicy(mcl);
+			
 			//retrieve  data
 			RangeSlicesQuery<String,String, String> s=createRangeSlicesQuery(ko,se, se, se);
 			
