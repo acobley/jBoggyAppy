@@ -13,10 +13,10 @@ import javax.servlet.http.HttpSession;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.ArticleConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
+
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
-import uk.ac.dundee.computing.aec.utils.Convertors;
-import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
+import uk.ac.dundee.computing.aec.utils.*;
+
 import static uk.ac.dundee.computing.aec.utils.Convertors.*;
 import java.io.IOException;
 import java.util.HashMap;

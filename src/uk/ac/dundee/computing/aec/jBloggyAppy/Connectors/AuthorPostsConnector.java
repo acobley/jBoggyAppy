@@ -2,7 +2,7 @@ package uk.ac.dundee.computing.aec.jBloggyAppy.Connectors;
 
 
 import static me.prettyprint.hector.api.factory.HFactory.createRangeSlicesQuery;
-
+import uk.ac.dundee.computing.aec.utils.*;
 import java.util.LinkedList;
 import java.util.List;
 

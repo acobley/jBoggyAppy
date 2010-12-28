@@ -1,26 +1,28 @@
 package uk.ac.dundee.computing.aec.utils;
 import me.prettyprint.hector.api.*;
-import org.apache.cassandra.thrift.ConsistencyLevel;
+
+import me.prettyprint.cassandra.service.OperationType;
 
 public final class MyConsistancyLevel implements ConsistencyLevelPolicy {
 
 	@Override
-	  public  ConsistencyLevel get(OperationType op) {
+	  public  HConsistencyLevel get(OperationType op) {
+		
 		switch (op){
-		case READ:return ConsistencyLevel.ONE;
-		case WRITE: return ConsistencyLevel.ONE;
-		default: return ConsistencyLevel.QUORUM; //Just in Case
+		case READ:return HConsistencyLevel.ONE;
+		case WRITE: return HConsistencyLevel.ONE;
+		default: return HConsistencyLevel.QUORUM; //Just in Case
 				
 		}
 
 	  }
 
 	  @Override
-	  public ConsistencyLevel get(OperationType op, String cfName) {
+	  public HConsistencyLevel get(OperationType op, String cfName) {
 		  switch (op){
-		  case READ:return ConsistencyLevel.QUORUM;
-		  case WRITE: return ConsistencyLevel.ONE;
-		  default: return ConsistencyLevel.QUORUM; //Just in Case
+		  case READ:return HConsistencyLevel.QUORUM;
+		  case WRITE: return HConsistencyLevel.ONE;
+		  default: return HConsistencyLevel.QUORUM; //Just in Case
 		  }
 	  }
 

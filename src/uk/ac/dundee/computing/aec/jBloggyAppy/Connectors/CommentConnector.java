@@ -44,12 +44,12 @@ import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.serializers.UUIDSerializer;
 
-import me.prettyprint.cassandra.service.CassandraClient;
+
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.TagStore;
 import uk.ac.dundee.computing.aec.utils.MyConsistancyLevel;
-
+import uk.ac.dundee.computing.aec.utils.*;
 public class CommentConnector {
 
 	

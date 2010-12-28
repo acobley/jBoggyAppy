@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
+
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.TagPostConnector;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.PostStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.TagStore;
-import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
+
 
 
 /**

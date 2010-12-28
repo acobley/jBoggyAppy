@@ -1,7 +1,10 @@
 package uk.ac.dundee.computing.aec.jBloggyAppy;
 
 import java.io.IOException;
-import java.util.*;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,16 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CommentConnector;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.AuthorStore;
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.CommentStore;
-import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
 
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.StringTokenizer;
 /**
  * Servlet implementation class Comment
  */

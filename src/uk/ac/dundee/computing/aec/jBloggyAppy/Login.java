@@ -25,9 +25,9 @@ import org.expressme.openid.OpenIdException;
 import org.expressme.openid.OpenIdManager;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts;
+
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
-import static uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.CassandraHosts.*;
+
 
 /**
  * Servlet implementation class Login
