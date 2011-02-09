@@ -118,7 +118,7 @@ function ShowScrollingTags(){
 		{
 		for(var i in data)
 			{ 
-			var Tag = data[i]["tag"];
+			var tag = data[i]["tag"];
 			ticker.append(
 					$("<li></li>").append(
 						$("<a></a>").attr("href", tag).text(tag).click(function()
@@ -129,7 +129,7 @@ function ShowScrollingTags(){
 						})
 					));
 			}
-		});
+		}, "json");
 	
 }
 
