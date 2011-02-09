@@ -35,7 +35,7 @@ import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
 
 public  final class CassandraHosts {
 	static Cluster c=null;
-	static String Host ="134.36.36.83";
+	static String Host ="134.36.36.84";
 	public CassandraHosts(){
 		
 	}
@@ -52,7 +52,8 @@ public  final class CassandraHosts {
 			System.out.println(c.describeClusterName());
 		
 		   //Set <String>hosts= c.getClusterHosts(true);
-			Set <CassandraHost>hosts= c.getKnownPoolHosts(true);
+			Set <CassandraHost>hosts= c.getKnownPoolHosts(false);
+			
 		   String sHosts[] = new String[hosts.size()];
 		   Iterator<CassandraHost> it =hosts.iterator();
 		   int i=0;
@@ -60,7 +61,7 @@ public  final class CassandraHosts {
 			   CassandraHost ch=it.next();
 			   
 		       sHosts[i]=(String)ch.getHost();
-		       System.out.println(sHosts[i]);
+		       System.out.println("Hosts"+sHosts[i]);
 		       i++;
 		   }
 		  
@@ -68,19 +69,13 @@ public  final class CassandraHosts {
 	}
 	public static Cluster getCluster(){
 		System.out.println("getCluster");
-		if (c==null){
+		
 			c = HFactory.getOrCreateCluster("CassandraStarbase", Host+":9160");
 			getHosts();
 			Keyspaces.SetUpKeySpaces(c);
 		
-			Keyspace ko = HFactory.createKeyspace("BloggyAppy", c);  //V2
-			if (ko==null){
-				System.out.println("No Keyspace");
-			}
-			ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
 		
-			ko.setConsistencyLevelPolicy(mcl);
-		}
+		
 		return c;
 		
 	}	

@@ -1,6 +1,9 @@
 @CHARSET "UTF-8";
 header, nav, footer, article {display:block;}
+header {clear:both;}
 nav {float:left; width:20%;}
-article {float:right; width:59%;}
-nav.Blogs {float:right; width:20%;}
-footer {clear:both;}
+#main {float:right; width:59%;}
+#Blogs {float:right; width:20%;}
+footer {float: left;}
+#SubscribedTags {float:left; width:20%;}
+#SubscribedArticles {float:right;}

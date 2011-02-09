@@ -88,4 +88,25 @@
     <url-pattern>/Tags</url-pattern>
     <url-pattern>/Tags/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Subscribe</display-name>
+    <servlet-name>Subscribe</servlet-name>
+    <servlet-class>uk.ac.dundee.computing.aec.jBloggyAppy.Subscribe</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Subscribe</servlet-name>
+    <url-pattern>/Subscribe</url-pattern>
+    <url-pattern>/Subscribe/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Logout</display-name>
+    <servlet-name>Logout</servlet-name>
+    <servlet-class>uk.ac.dundee.computing.aec.jBloggyAppy.Logout</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Logout</servlet-name>
+    <url-pattern>/Logout</url-pattern>
+  </servlet-mapping>
 </web-app>

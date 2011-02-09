@@ -31,6 +31,9 @@ NumPosts: <%=Author.getnumPosts() %>
 	<% 
 }
 %>
+<%-- 
+<p>List all <a href="/jBloggyAppy/"+<%=Author.getname()%>>Subscriptions</a></p>
+--%>
 <p><a href="/jBloggyAppy/Author">Return to Authors list</a></p>
 </body>
 </html>

@@ -17,24 +17,32 @@ scope="session"
 	
 <LINK REL=StyleSheet HREF="/jBloggyAppy/css/style.css" TYPE="text/css" MEDIA=screen>
 <script type="text/javascript" src="/jBloggyAppy/Scripts/GetAuthors.js"></script>
-<title>jBloggy Appy</title>
+
+<title>Gossip</title>
 </head>
 <body>
-<h1 id="title">Header</h1>
+<header>
+<h1 id="title">Gossip</h1>
+<article >
+<header id="Subscriptions"></header>
+<nav id="SubscribedTags"></nav>
+<nav id="SubscribedArticles"></nav>
+</article>
+</header>
 <nav>
-<h3>Authors</h3>
+<h2>Authors</h2>
 <div id="navloading"></div>
 <div id="nav"></div>
 </nav>
-<article>
+<article id="main">
 <div id="loading"></div>
 <div id="content"></div>
 </article>
-<nav>
+<nav id="Blogs">
 <div id="Blogsloading"></div>
 <div id="BlogsHeading"></div>
 
-<div id="Blogs"></div>
+
 </nav>
 <footer>
 
@@ -49,7 +57,7 @@ if (User.isloggedIn()==false){
 
 
 	Title:<input name="Title"></input><br/>
-	Body:<textarea name="Body" rows="20" cols="80"></textarea><br/>
+	Body:<textarea name="Body" rows="2" cols="80"></textarea><br/>
 	Tags:<input name="Tags"></input><br/>
 	 
 	<input type="submit"  value="Add Article">

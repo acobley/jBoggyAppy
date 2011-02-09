@@ -122,7 +122,7 @@ public static String[] SplitTags(String Tags){
 						
 			args[argv]=st.nextToken();
 			try{
-				System.out.println("String was "+URLDecoder.decode(args[argv],"UTF-8"));
+				//System.out.println("String was "+URLDecoder.decode(args[argv],"UTF-8"));
 				args[argv]=URLDecoder.decode(args[argv],"UTF-8");
 				
 			}catch(Exception et){

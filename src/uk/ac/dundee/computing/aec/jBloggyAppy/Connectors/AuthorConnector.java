@@ -228,7 +228,7 @@ public class AuthorConnector {
 		try{
 			
 			c=CassandraHosts.getCluster();
-			CassandraHosts.getHosts();
+			
 		}catch (Exception et){
 			System.out.println("get Articles Posts Can't Connect"+et);
 			return false;
@@ -310,9 +310,9 @@ public class AuthorConnector {
 		try{
 			
 			c=CassandraHosts.getCluster();
-			CassandraHosts.getHosts();
+			
 		}catch (Exception et){
-			System.out.println("get Articles Posts Can't Connect"+et);
+			System.out.println("get Articles Posts Can't Connect "+et);
 			return null;
 		}
 		ConsistencyLevelPolicy mcl = new MyConsistancyLevel();
@@ -336,7 +336,10 @@ public class AuthorConnector {
 				QueryResult<OrderedRows<String,String, String>> r2 = s.execute();
 				rows = r2.get();
 			}catch(Exception et){
-				System.out.println("Cant make Query on Article connector"+et);
+				System.out.println("Cant make Query on Registered openid emails");
+				
+				System.out.println(""+et);
+				System.out.flush();
 				return null;
 			}
 			for (Row<String,String, String> row2 : rows) {
@@ -359,7 +362,7 @@ public class AuthorConnector {
 		    }
 
 		}catch (Exception et){
-			System.out.println("Can't get Authors "+et);
+			System.out.println("Can't get registered authors "+et);
 			return null;
 		}finally{
 			

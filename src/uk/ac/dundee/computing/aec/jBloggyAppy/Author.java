@@ -176,7 +176,9 @@ public class Author extends HttpServlet {
 		
 		if (au.AddAuthor(Author)== true){
 			lc.setloggedIn(Author.getname(), Author.getemailName());
-			ReturnAllAuthors(request,response,0);  //Return as Jsp only
+			rd=request.getRequestDispatcher("index.jsp");
+			rd.forward(request,response);
+			//ReturnAllAuthors(request,response,0);  //Return as Jsp only
 		}else{
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
 			rd.forward(request,response);

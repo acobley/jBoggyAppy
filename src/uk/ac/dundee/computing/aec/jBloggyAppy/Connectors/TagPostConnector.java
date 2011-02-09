@@ -82,7 +82,7 @@ public class TagPostConnector {
 				
 				s.setColumnFamily("TaggedPosts");
 				s.setKeys(Tag,Tag); //Set the Key
-				s.setRange(null, null, false, 1); //Set the range of columns (we want them all) 
+				s.setRange(null, null, true, 100); //Set the range of columns (we want them all) 
 			}
 			catch(Exception et){
 				System.out.println("TagedPosts RangeSlice Query"+et);

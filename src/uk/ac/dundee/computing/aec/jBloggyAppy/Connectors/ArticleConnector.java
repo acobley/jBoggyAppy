@@ -43,7 +43,7 @@ public class ArticleConnector {
 		try{
 			
 			c=CassandraHosts.getCluster();
-			CassandraHosts.getHosts();
+			
 		}catch (Exception et){
 			System.out.println("get Articles Posts Can't Connect"+et);
 			return null;
@@ -65,7 +65,7 @@ public class ArticleConnector {
 			
 			s.setColumnFamily("BlogEntries");
 			//s.setColumnNames(columnNames)
-			s.setKeys(title, ""); //Set the Key
+			s.setKeys(title, title); //Set the Key
 			s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
 			QueryResult<OrderedRows<String,String, String>> r2 = s.execute();
 			rows = r2.get();
@@ -224,7 +224,7 @@ public class ArticleConnector {
 	        //Its been incremented, put it back again now
 	         columnName = "numPosts";
 	         m.insert(key, "BlogEntries",
-         		    HFactory.createColumn(columnName, now,se,le));
+         		    HFactory.createColumn(columnName, lValue,se,le));
 	       
         	 
         	 //Now we need to deal with the tags and authors indexes

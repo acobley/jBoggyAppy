@@ -84,11 +84,11 @@ public class Comment extends HttpServlet {
 		Comment.setbody(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Comment")));
 		String title=(org.apache.commons.lang.StringEscapeUtils.escapeHtml(request.getParameter("Title")));
 		CommentConnector au = new CommentConnector();
-
+		System.out.println("Comment" +Comment.getbody());
 		
 		RequestDispatcher rd;
 		if (au.AddComment(title,Comment)== true){
-			ReturnComments(request,response,0,title);  //Return as Jsp only
+			//ReturnComments(request,response,0,title);  //Return as Jsp only
 		}else{
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
 		}
@@ -126,7 +126,7 @@ public class Comment extends HttpServlet {
 					RequestDispatcher rd=null;
 					try {
 						
-						rd=request.getRequestDispatcher("/RenderComments.jsp");
+						rd=request.getRequestDispatcher("/index.jsp");
 					
 						rd.forward(request,response);
 					}catch(Exception et){

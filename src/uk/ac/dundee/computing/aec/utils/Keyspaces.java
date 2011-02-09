@@ -39,13 +39,16 @@ public final class Keyspaces {
 				System.out.println("Keyspace probably doesn't exist, tryping to create it"+et);
 				List<ColumnFamilyDefinition> cfs = new ArrayList<ColumnFamilyDefinition>(); 
 				BasicColumnFamilyDefinition cf = new BasicColumnFamilyDefinition(); 
+				
 				cf.setName("Authors");
 				cf.setKeyspaceName("BloggyAppy");
 				cf.setComparatorType(ComparatorType.BYTESTYPE);
 				ColumnFamilyDefinition cfDef = new ThriftCfDef(cf); 
 				cfs.add(cfDef);
 				cf.setName("BlogEntries");
-				
+				cfDef = new ThriftCfDef(cf); 
+				cfs.add(cfDef);
+				cf.setName("RegisteredOpenIdEmails");
 				cfDef = new ThriftCfDef(cf); 
 				cfs.add(cfDef);
 				cf.setComparatorType(ComparatorType.TIMEUUIDTYPE);
@@ -53,6 +56,9 @@ public final class Keyspaces {
 				cfDef = new ThriftCfDef(cf); 
 				cfs.add(cfDef);
 				cf.setName("AuthorPosts");
+				cfDef = new ThriftCfDef(cf); 
+				cfs.add(cfDef);
+				cf.setName("Subscriptions");  //Key is author, columns are TimeUUID/Tag
 				cfDef = new ThriftCfDef(cf); 
 				cfs.add(cfDef);
 				

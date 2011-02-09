@@ -52,7 +52,7 @@ Slug: <%=Article.getslug() %>
 
 Author:<input name="Author"></input><br/>
 
-Body:<textarea name="Comment" rows="20" cols="80"></textarea><br/>
+Body:<textarea name="Comment" rows="2" cols="80"></textarea><br/>
 
 <input type="hidden" name="Title" value="<%=Article.gettitle() %>"></input>
 <input type="submit"  value="Add Comment">

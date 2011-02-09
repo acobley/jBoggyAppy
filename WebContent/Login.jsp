@@ -9,8 +9,7 @@
 <body>
 
 <h1>Sign on with OpenID from:</h1>
-  <p><a href="Login/Google">Google</a></p>
-  <p><a href="Login/Yahoo">Yahoo</a></p>
+ 
   <p><a href="http://code.google.com/p/jopenid/" target="_blank">About JOpenID</a></p>
 
 </body>

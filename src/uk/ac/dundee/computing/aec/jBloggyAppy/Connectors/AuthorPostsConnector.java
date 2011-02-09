@@ -72,7 +72,7 @@ public class AuthorPostsConnector {
 				
 				s.setColumnFamily("AuthorPosts");
 				s.setKeys(Author,Author); //Set the Key
-				s.setRange("", "", false, 100); //Set the range of columns (we want them all) 
+				s.setRange("", "", true, 20); //Set the range of columns (we want them all) 
 			}
 			catch(Exception et){
 				System.out.println("AuthorPosts RangeSlice Query"+et);

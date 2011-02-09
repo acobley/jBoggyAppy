@@ -12,16 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.ArticleConnector;
-import uk.ac.dundee.computing.aec.jBloggyAppy.Connectors.AuthorConnector;
+
 
 import uk.ac.dundee.computing.aec.jBloggyAppy.Stores.*;
 import uk.ac.dundee.computing.aec.utils.*;
 
-import static uk.ac.dundee.computing.aec.utils.Convertors.*;
-import java.io.IOException;
+
 import java.util.HashMap;
-import java.util.List;
-import java.util.StringTokenizer;
+
 
 /**
  * Servlet implementation class Article
@@ -145,7 +143,7 @@ public class Article extends HttpServlet {
 					RequestDispatcher rd=null;
 					try {
 						
-						rd=request.getRequestDispatcher("/RenderArticle.jsp");
+						rd=request.getRequestDispatcher("/index.jsp");
 					
 						rd.forward(request,response);
 					}catch(Exception et){

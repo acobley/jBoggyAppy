@@ -78,7 +78,9 @@ public class Login extends HttpServlet {
 		//Possible Call Methods:
 		
 		// jBloggyAppy/Login/Yahoo
+		// jBloggyAppy/Login/
 		// jBloggyAppy/Login/Google
+		// jBloggyAPpy/Login/Facebook
 		System.out.println("URL = "+request.getRequestURL());
 		System.out.println("URI = "+request.getRequestURI());
 		
@@ -106,7 +108,7 @@ public class Login extends HttpServlet {
 	        		checkNonce(request.getParameter("openid.response_nonce"));
 	        	}catch (Exception et){
 	        		System.out.println("Check Nonce failed "+et);
-	        		response.sendRedirect("/jBloggyAppy/Login.jsp");
+	        		response.sendRedirect("/jBloggyAppy/index.jsp");
 	        		return;
 	        	}
 	            // get authentication:
@@ -114,13 +116,13 @@ public class Login extends HttpServlet {
 	            String alias = (String) request.getSession().getAttribute(ATTR_ALIAS);
 	            Authentication authentication = manager.getAuthentication(request, mac_key, alias);
 	            if (authentication==null) {
-	            	response.sendRedirect("/jBloggyAppy/Login.jsp");
+	            	response.sendRedirect("/jBloggyAppy/index.jsp");
 	            }
 	            response.setContentType("text/html; charset=UTF-8");
 	            showAuthentication(request,response, authentication);
 	            return;
 	        }
-	        if (op.equals("Google") || op.equals("Yahoo")) {
+	        if (op.equals("Google") || op.equals("Yahoo") || op.equals("Facebook")) {
 	            // redirect to Google or Yahoo sign on page:
 	            Endpoint endpoint = manager.lookupEndpoint(op);
 	            Association association = manager.lookupAssociation(endpoint);
@@ -155,14 +157,16 @@ public class Login extends HttpServlet {
 		}
 		String Email=auth.getEmail();
 		lc.setloggedIn("",Email);
-		System.out.println("Login "+lc.getname());
+		System.out.println("Login "+lc.getname()+" Email "+Email);
 		//Check to see if user is registered,  You can login but not be registered
 		AuthorConnector au = new AuthorConnector();
 		
 		
 		RequestDispatcher rd=null;
 		AuthorStore ars=au.getAuthorFromEmail(Email);
-		if (ars.getname()== null){
+		System.out.println("ars"+ars);
+		System.out.println("ars name"+ars.getname());
+		if ((ars==null) || (ars.getname()==null)){
 			System.out.println("Not Registered");
 			System.out.flush();
 			rd=request.getRequestDispatcher("RegisterUser.jsp");
@@ -171,6 +175,7 @@ public class Login extends HttpServlet {
 			}catch(Exception et){
 				System.out.println("Can't forward in login servlet"+et);
 			}
+			return;
 		}
 		//Now we are logged in and registered then we can set them both
 		lc.setloggedIn(ars.getname(),Email);
@@ -181,32 +186,24 @@ public class Login extends HttpServlet {
 		ReturnStore Ret = (ReturnStore)session.getAttribute("ReturnPoint");
 		
 		
-		
+		/*
 		if (Ret !=null){
-			System.out.println("Return to "+Ret.getreturnTo());
+			//System.out.println("Return to "+Ret.getreturnTo());
 			rd=request.getRequestDispatcher(Ret.getreturnTo());
+			
+			
+			rd=request.getRequestDispatcher("/index.jsp");
 		}else{
-			rd=request.getRequestDispatcher("/Author");
+			response.sendRedirect("/jBloggyAppy/index.jsp");
 		}
-		
+		*/
 		try{
-			rd.forward(request,response);
+			response.sendRedirect("/jBloggyAppy/index.jsp");
+			//rd.forward(request,response);
 		}catch(Exception et){
 			System.out.println("Can't forward in login servlet"+et);
 		}
-		
-		/*
-        pw.print("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /><title>Test JOpenID</title></head><body><h1>You have successfully signed on!</h1>");
-        pw.print("<p>Identity: " + auth.getIdentity() + "</p>");
-        pw.print("<p>Email: " + auth.getEmail() + "</p>");
-        pw.print("<p>Full name: " + auth.getFullname() + "</p>");
-        pw.print("<p>First name: " + auth.getFirstname() + "</p>");
-        pw.print("<p>Last name: " + auth.getLastname() + "</p>");
-        pw.print("<p>Gender: " + auth.getGender() + "</p>");
-        pw.print("<p>Language: " + auth.getLanguage() + "</p>");
-        pw.print("</body></html>");
-        pw.flush();
-        */
+
     }
 
     void checkNonce(String nonce) {
