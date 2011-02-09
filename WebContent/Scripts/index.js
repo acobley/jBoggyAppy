@@ -124,7 +124,6 @@ function ShowScrollingTags(){
 						$("<a></a>").attr("href", tag).text(tag).click(function()
 						{
 							var thisTitle = $(this).attr("href");
-						
 							loadArticle(thisTitle,Author);
 							return false;
 						})
