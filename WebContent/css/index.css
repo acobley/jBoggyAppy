@@ -1,0 +1,188 @@
+@CHARSET "UTF-8";
+body {width:50em;}
+header, nav, footer, article {display:block;}
+header {clear:both; width:100%;}
+header #Banner{clear:both; width:100%;height:12em;}
+
+header#AuthorName {float:left; width:30em; height:3em;}
+hgroup {float:left;height:100%;}
+nav#LoginOptions {float:right;height:100%;}
+
+
+aside#Tags {float:right; width:20em;}
+article#AuthorsMessages {float:left;width:30em;}
+section#content {float:right;width:20em;}
+h4 {border:0em;margin:0em;padding:0em;}
+div {border:0em;margin:0em;padding:0em;}
+ul {border:0em;margin:0em;padding:0em;border-left:1em;}
+
+
+h1, h2, h3, h4 {
+	margin: 0;
+	padding: 0;
+	font-weight: normal;
+	color: #303030;
+}
+
+h1 {
+	font-size: 2em;
+}
+
+h2 {
+	font-size: 2.4em;
+}
+
+h3 {
+	font-size: 1.6em;
+}
+
+h3 {
+	font-size: 1.3em;
+}
+
+p {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	margin-top: 0;
+	line-height: 180%;
+}
+
+td {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	margin-top: 0;
+	line-height: 180%;
+}
+
+ul li {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	margin-top: 0;
+	line-height: 180%;
+}
+
+ul, ol {
+}
+
+a {
+	text-decoration: none;
+	color: #121212;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+
+ h1 {
+	
+	margin: 0px;
+	padding: 10px 0px 0px 10px;
+	letter-spacing: -1px;
+	
+	text-shadow: #808080 -1px 1px 2px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 30px;
+ }
+ 
+  h2 {
+	
+	margin: 0px;
+	padding: 10px 0px 0px 10px;
+	letter-spacing: -1px;
+	
+	text-shadow: #808080 -1px 1px 2px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 20px;
+ }
+ 
+  h3 {
+	
+	margin: 0px;
+	padding: 10px 0px 0px 10px;
+	letter-spacing: -1px;
+	
+	text-shadow: #808080 -1px 1px 2px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 18px;
+ }
+ 
+   h4 {
+	
+	margin: 0px;
+	padding: 10px 0px 0px 10px;
+	letter-spacing: -1px;
+	
+	text-shadow: #808080 -1px 1px 2px;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 15px;
+ }
+ a {
+	
+	height: 25px;
+	margin: 0px 2px 0px 15px;
+	padding: 10px 15px 0px 15px;
+	background: url(images/img04.gif) no-repeat left 14px;
+	text-decoration: none;
+	
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: 12px;
+	font-weight: bold;
+	
+	border: none;
+}
+
+
+
+p {
+	margin: 0 0px;
+	padding: 0px 20px 20px 20px;
+	text-align: justify;
+	font-size: 14px;
+}
+
+
+
+
+
+/* liScroll styles */
+
+.tickercontainer { /* the outer div with the black border */
+border: 1px solid #000;
+background: #fff; 
+width: 738px; 
+height: 27px; 
+margin: 0; 
+padding: 0;
+overflow: hidden; 
+}
+.tickercontainer .mask { /* that serves as a mask. so you get a sort of padding both left and right */
+position: relative;
+left: 10px;
+top: 8px;
+width: 718px;
+overflow: hidden;
+}
+ul.newsticker { /* that's your list */
+position: relative;
+left: 750px;
+font: bold 10px Verdana;
+list-style-type: none;
+margin: 0;
+padding: 0;
+
+}
+ul.newsticker li {
+float: left; /* important: display inline gives incorrect results when you check for elem's width */
+margin: 0;
+padding: 0;
+background: #fff;
+}
+ul.newsticker a {
+white-space: nowrap;
+padding: 0;
+color: #ff0000;
+font: bold 10px Verdana;
+margin: 0 50px 0 0;
+} 
+ul.newsticker span {
+margin: 0 10px 0 0;
+} 
+ 
