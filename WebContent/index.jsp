@@ -92,13 +92,7 @@ if (User.isloggedIn()==false){
 <article id="AuthorsMessages">
 <header id="AuthorName">
 <h1 id="AuthorName">
-<% 
-if (User.isloggedIn()==true){
-	%><%=User.getname() %>
-	
-	<% 
-}
-%></h1>
+<%if (User.isloggedIn()==true){%><%=User.getname()%><%}%></h1>
 
 </header>
 <header id="ArticleHeader">

@@ -10,7 +10,7 @@ var sAuthor="_All-Authors_"; // The authors subscriptions
 
 $(function(){
 	ShowScrollingTags();
-	$("ul#ticker01").liScroll();
+	
 	var AddSomething=$("#AddMessageForm");
 	AddSomething.append($("<input>").attr("type","Submit").attr("value","speak").click(function()
 			{
@@ -43,17 +43,22 @@ $(function(){
 		}));
 	
     self = this;
-	 pAuthor=$("#AuthorName").text();
+	 pAuthor=$("h1 #AuthorName").text();
 	
-	if (pAuthor.length<4){
+	if (pAuthor.length<5){
 		pAuthor="_All-Authors_";
 	}
 	sAuthor=pAuthor;
 	loadAuthor(pAuthor,sAuthor);
 	
+	var t=setTimeout(ScrollNow,500);
 	
 	 
 });
+
+function ScrollNow(){
+	$("ul#ticker01").liScroll();
+}
 function setHash(path)
 {
 	if (currentLocation != path)
@@ -114,20 +119,25 @@ function setTitle(str){
 
 function ShowScrollingTags(){
 	ticker = $("#ticker01");
+	
+	
 	$.get("/jBloggyAppy/Tags/json", function(data)
 		{
+		data = data["Data"];
 		for(var i in data)
 			{ 
 			var tag = data[i]["tag"];
-			ticker.append(
-					$("<li></li>").append(
+			ticker.append($("<li id='scroll"+i+"'></li>"));
+			Scroll=$("#scroll"+i);
+			//Scroll.append("<span>10/10/2007</span>");
+			Scroll.append(
 						$("<a></a>").attr("href", tag).text(tag).click(function()
 						{
 							var thisTitle = $(this).attr("href");
-							loadArticle(thisTitle,Author);
+							loadTaggedPosts(thisTitle);
 							return false;
 						})
-					));
+					);
 			}
 		}, "json");
 	
@@ -143,6 +153,39 @@ function loadAuthor(pAuthor,sAuthor)
 	loadSubscriptions(sAuthor);
 }
 
+function loadTaggedPosts(Tag){
+	$.get("/jBloggyAppy/Tags/"+Tag+"/json", function(data)
+			{
+				//hidenavWaiting();
+				//setTitle("Post");
+				//alert(Author);
+				data = data["Data"];
+				//alert (" NumPosts "+NumPosts+" Data length"+data.length);
+				if (data.length != NumPosts){
+					NumPosts=data.length;
+					clearBlogs();
+					$('#ArticleHeader').empty();
+					$("#ArticleHeader").append("<h2>Messages</h2>");
+					$("#ArticleHeader").append("<ul></ul>");
+					for(var i in data)
+					{ 
+						var title = data[i]["title"]
+						//alert(title);                   
+						$("#ArticleHeader ul").append(
+							$("<li></li>").append(
+								$("<a></a>").attr("href", title).text(title).click(function()
+								{
+									var thisTitle = $(this).attr("href");
+								
+									loadArticle(thisTitle,Author);
+									return false;
+								})
+							)
+						);
+					}
+				}
+			}, "json");
+}
 
 function loadPosts(Author)
 {
