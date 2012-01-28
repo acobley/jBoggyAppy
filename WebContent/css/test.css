@@ -1,0 +1,6 @@
+@CHARSET "UTF-8";
+nav {float:left;}
+body {width:80em;}
+header {width:80em;}
+nav {width:20em;}
+article {width:60em;float:right;}

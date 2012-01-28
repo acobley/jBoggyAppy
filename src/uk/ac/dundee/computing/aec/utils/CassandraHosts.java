@@ -28,7 +28,7 @@ import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
  * 
  * 134.36.36.85  Windows 
  * 
- * 134.36.36.205 Seed Windows, no network
+ * 134.36.36.82  jspnet
  *
  *
  */

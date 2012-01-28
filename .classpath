@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0 (MacOS X Default)">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.core.runtimeTarget/J2EE Runtime Library">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.web"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/j2ee.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/javax.servlet.jsp.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/javax.servlet.jsp.jstl.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/jopenid-1.07.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/json.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/apache-cassandra-0.7.0-rc2.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/cassandra-javautils-0.7.0.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/commons-pool-1.5.3.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/google-collections-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/high-scale-lib-1.0.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/jug-asl-2.0.0.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-/perf4j-0.9.12.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/cassandra-thrift-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/commons-pool-1.5.3.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/FastInfoset-1.2.2.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/guava-r09.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/hector-core-1.0-1-sources.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/hector-core-1.0-1-tests.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/hector-core-1.0-1.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/libthrift-0.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/speed4j-0.9.jar"/>
+	<classpathentry kind="lib" path="/Users/administrator/Dropbox/workspace/jBloggyAppy/src/lib/hector-core-1.0-1/uuid-3.2.0.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
