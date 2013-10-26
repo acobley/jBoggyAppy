@@ -8,10 +8,9 @@ import me.prettyprint.hector.api.factory.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.prettyprint.cassandra.model.BasicColumnFamilyDefinition;
-import me.prettyprint.cassandra.service.*;
-import me.prettyprint.hector.api.ddl.ComparatorType;
-import me.prettyprint.hector.api.*;
+
+
+import com.datastax.driver.core.*;
 
 public final class Keyspaces {
 

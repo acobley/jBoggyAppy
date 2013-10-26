@@ -1,21 +1,11 @@
 package uk.ac.dundee.computing.aec.utils;
-
-import uk.ac.dundee.computing.aec.utils.MyConsistancyLevel;
+import com.datastax.driver.core.*;
 
 import java.util.Iterator;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.prettyprint.hector.api.ConsistencyLevelPolicy;
-import me.prettyprint.hector.api.Keyspace;
-import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.*;
-//import me.prettyprint.cassandra.service.Cluster;
-import me.prettyprint.cassandra.service.*;
-import me.prettyprint.cassandra.model.BasicKeyspaceDefinition;
-import me.prettyprint.hector.api.ddl.KeyspaceDefinition;
-import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
 /**********************************************************
  * 
  * 
@@ -34,7 +24,7 @@ import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
  */
 
 public  final class CassandraHosts {
-	static Cluster c=null;
+	private static Cluster cluster;
 	static String Host ="134.36.36.84";
 	public CassandraHosts(){
 		
@@ -69,14 +59,14 @@ public  final class CassandraHosts {
 	}
 	public static Cluster getCluster(){
 		System.out.println("getCluster");
-		
-			c = HFactory.getOrCreateCluster("CassandraStarbase", Host+":9160");
+		cluster = Cluster.builder()
+		         .addContactPoint(Host).build();
 			getHosts();
-			Keyspaces.SetUpKeySpaces(c);
+			Keyspaces.SetUpKeySpaces(cluster);
 		
 		
 		
-		return c;
+		return cluster;
 		
 	}	
 	
