@@ -6,7 +6,7 @@ bassed on the blog post by Arin Sarkissin http://arin.me/blog/wtf-is-a-supercolu
 
 Login uses OpenId
 
-JBloggy Appy uses the following java servelts as controllers:
+JBloggy Appy uses the following java servlets as controllers:
 
 Article.  
 GET //Possible Call Methods:
