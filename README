@@ -1,3 +1,6 @@
+This branch will use the DataStax Java driver.  It does not at present do anything of the kind
+
+
 jBloggyAppy is a implementation of a Blog using Java and Cassandra as the dB backend.  It is 
 bassed on the blog post by Arin Sarkissin http://arin.me/blog/wtf-is-a-supercolumn-cassandra-data-model
 
