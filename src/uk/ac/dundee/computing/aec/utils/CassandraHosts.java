@@ -34,24 +34,25 @@ public  final class CassandraHosts {
 		return (Host);
 	}
 	
-	public static String[] getHosts(){
-		  if (c==null){
-			  System.out.println("Creating cluster connection");
-			c = HFactory.getOrCreateCluster("CassandraStarbase", Host+":9160");
-		  }
-			System.out.println(c.describeClusterName());
+	public static String[] getHosts(Cluster cluster){
 		
-		   //Set <String>hosts= c.getClusterHosts(true);
-			Set <CassandraHost>hosts= c.getKnownPoolHosts(false);
+		  if (cluster==null){
+			  System.out.println("Creating cluster connection");
+			  cluster = Cluster.builder()
+				         .addContactPoint(Host).build();
+		  }
+			System.out.println("Cluster Name" + cluster.getClusterName());
+		    Metadata mdata = cluster.getMetadata();
+		    Set<Host> hosts =mdata.getAllHosts();
+		    String sHosts[] = new String[hosts.size()];
 			
-		   String sHosts[] = new String[hosts.size()];
-		   Iterator<CassandraHost> it =hosts.iterator();
+		   Iterator<Host> it =hosts.iterator();
 		   int i=0;
 		   while (it.hasNext()) {
-			   CassandraHost ch=it.next();
-			   
-		       sHosts[i]=(String)ch.getHost();
-		       System.out.println("Hosts"+sHosts[i]);
+			   Host ch=it.next();
+			   sHosts[i]=(String)ch.getAddress().toString();
+		     
+		       System.out.println("Hosts"+ch.getAddress().toString());
 		       i++;
 		   }
 		  
@@ -61,7 +62,7 @@ public  final class CassandraHosts {
 		System.out.println("getCluster");
 		cluster = Cluster.builder()
 		         .addContactPoint(Host).build();
-			getHosts();
+			getHosts(cluster);
 			Keyspaces.SetUpKeySpaces(cluster);
 		
 		
